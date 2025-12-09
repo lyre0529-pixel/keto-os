@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>与妳酮行 OS v0.18</title>
+    <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    
+    <style>
+        /* --- 📱 OS 基础样式 --- */
+        body { background-color: #2c3e50; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: "Microsoft YaHei", sans-serif; }
+        #phone-case { width: 375px; height: 750px; background-color: #fff0f5; border: 8px solid #000; border-radius: 20px; position: relative; overflow: hidden; box-shadow: 10px 10px 0 rgba(0,0,0,0.5); display: flex; flex-direction: column; }
+        .status-bar { height: 30px; background: #000; color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; font-size: 12px; }
+        
+        #desktop { flex: 1; padding: 20px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 20px; }
+        .app-icon-container { width: 70px; text-align: center; cursor: pointer; }
+        .app-icon { width: 60px; height: 60px; background-color: #fff; border: 3px solid #000; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 30px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); transition: transform 0.1s; }
+        .app-icon:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+        .app-name { font-size: 12px; margin-top: 5px; font-weight: bold; color: #333; }
+
+        .app-screen { display: none; flex: 1; background-color: #fff; flex-direction: column; overflow-y: auto; padding-bottom: 20px; }
+        .app-nav { background-color: #b8e994; padding: 10px; border-bottom: 3px solid #000; display: flex; align-items: center; justify-content: space-between; }
+        
+        .date-nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background-color: #fff3cd; border-bottom: 2px dashed #ccc; font-size: 12px; }
+        .date-btn { background: #fff; border: 1px solid #000; cursor: pointer; padding: 2px 8px; font-weight: bold; box-shadow: 2px 2px 0 #ccc; }
+        .history-mode .date-nav-bar { background-color: #e0e0e0; }
+
+        /* 喝水模块 */
+        .water-dashboard { display: flex; align-items: center; justify-content: space-around; padding: 20px 10px; background-color: #e3f2fd; border-bottom: 3px solid #000; transition: background-color 0.3s; }
+        .history-mode .water-dashboard { background-color: #e0e0e0; }
+        .bottle-container { width: 90px; height: 160px; border: 4px solid #000; border-radius: 10px 10px 5px 5px; position: relative; background: #fff; overflow: hidden; display: flex; flex-direction: column-reverse; }
+        .bottle-container::before { content: ''; position: absolute; z-index: 10; top: -10px; left: 25px; width: 32px; height: 10px; background: #000; }
+        .water-layer { width: 100%; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 10px; font-weight: bold; transition: height 0.3s; border-top: 1px solid rgba(0,0,0,0.05); text-shadow: 1px 1px 0 #000; white-space: nowrap; overflow: hidden; }
+        .drink-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px; }
+        .drink-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .drink-icon { width: 50px; height: 50px; border: 2px solid #000; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 5px; border-radius: 8px; background-color: #fff; overflow: hidden; }
+        .log-entry { padding: 5px; border-bottom: 1px dashed #ccc; display: flex; justify-content: space-between; align-items: center; }
+        .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; border:1px solid #000;}
+
+        /* --- 📊 身体数据 v0.18 样式 --- */
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .body-tabs { display: flex; border-bottom: 3px solid #000; background: #ddd; }
+        .body-tab-btn { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-size: 12px; font-weight: bold; border-right: 2px solid #000; background: #eee; position: relative; }
+        .body-tab-btn.active { background: #fff; color: #d63384; }
+        .body-tab-btn.active::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 100%; height: 3px; background: #fff; } 
+        
+        .sub-page { display: none; flex: 1; flex-direction: column; }
+        .sub-page.active { display: flex; }
+
+        .input-area { padding: 15px; background: #fff; flex: 1; }
+        .history-mode .input-area { background: #f4f4f4; }
+        
+        .input-row { display: flex; align-items: center; margin-bottom: 12px; height: 32px; }
+        .input-label { width: 75px; min-width: 75px; font-size: 12px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+        .input-wrapper { flex: 1; display: flex; align-items: center; margin-right: 8px; position: relative; }
+        .nes-input.is-compact { width: 100%; height: 32px; padding: 4px 8px; font-size: 12px; }
+        
+        /* 血压和体重双输入框 */
+        .dual-container { flex: 1; display: flex; gap: 2px; align-items: center; margin-right: 8px; font-size: 10px; }
+        .dual-input { flex: 1; height: 32px; padding: 4px; font-size: 12px; border: 4px solid #000; width: 30px; outline:none; text-align: center; }
+        .unit-suffix { font-weight: bold; font-size: 10px; margin-left: 2px; margin-right: 5px; color: #555; }
+
+        .auto-unit { font-size: 10px; color: #666; position: absolute; right: 10px; pointer-events: none; background: rgba(255,255,255,0.8); padding-left: 2px;}
+
+        /* Badge 样式 */
+        .diff-badge { width: 70px; height: 32px; display: flex; justify-content: center; align-items: center; font-size: 9px; font-weight: bold; border-radius: 4px; border: 2px solid rgba(0,0,0,0.1); background: #eee; color: #999; flex-shrink: 0; white-space: nowrap; }
+        .diff-good { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .diff-bad { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .diff-new { background: #cce5ff; color: #004085; border-color: #b8daff; }
+
+        .calc-stats { background: #fff3e0; border: 2px dashed #ff9800; padding: 10px; margin-bottom: 15px; border-radius: 5px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .calc-item { flex: 1; min-width: 30%; text-align: center; }
+        .calc-val { font-weight: bold; font-size: 14px; color: #e65100; font-family: 'Courier New', monospace; }
+        .calc-label { font-size: 10px; color: #666; }
+
+        .diary-section { margin-top: 20px; border-top: 2px dashed #ccc; padding-top: 15px; }
+        .diary-title { text-align: center; font-weight: bold; margin-bottom: 10px; color: #555; background: #e8e8e8; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 12px; }
+        .diary-input { width: 100%; min-height: 120px; padding: 10px; font-size: 12px; border: 4px solid #000; border-radius: 4px; resize: none; outline: none; line-height: 1.5; }
+
+        /* 汇总页 */
+        .summary-source-switch { display: flex; gap: 10px; padding: 10px; background: #eee; border-bottom: 2px solid #000; }
+        .summary-source-btn { flex: 1; font-size: 10px; padding: 8px; background: #fff; border: 2px solid #ccc; cursor: pointer; }
+        .summary-source-btn.active { border-color: #000; background: #d1eaed; color: #000; font-weight: bold; box-shadow: 2px 2px 0 #999; transform: translate(-1px, -1px); }
+
+        .metric-scroll-nav { display: flex; overflow-x: auto; gap: 10px; padding: 10px; border-bottom: 1px solid #ccc; background: #fff; white-space: nowrap; }
+        .metric-chip { padding: 5px 12px; border: 2px solid #000; border-radius: 20px; font-size: 10px; cursor: pointer; background: #fff; }
+        .metric-chip.active { background: #d63384; color: #fff; }
+
+        .summary-view-toggle { display: flex; justify-content: flex-end; padding: 5px 10px; gap: 5px; }
+        .sum-view-btn { font-size: 10px; padding: 4px 8px; border: 1px solid #000; cursor: pointer; background: #eee; }
+        .sum-view-btn.active { background: #2c3e50; color: #fff; }
+
+        .summary-content { flex: 1; overflow-y: auto; background: #f9f9f9; padding: 10px; }
+        
+        .report-table { width: 100%; border-collapse: collapse; font-size: 12px; background: #fff; border: 2px solid #000; }
+        .report-table th { background: #2c3e50; color: #fff; padding: 8px; text-align: left; position: sticky; top: 0; }
+        .report-table td { border-bottom: 1px dashed #ccc; padding: 10px; vertical-align: middle; }
+        
+        /* v0.18: 趋势颜色语义化 */
+        .val-change { font-size: 9px; display: inline-block; margin-left: 5px; padding: 1px 3px; border-radius: 3px; }
+        .val-good { color: #155724; background: #d4edda; border: 1px solid #c3e6cb; } /* Green */
+        .val-bad { color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb; }   /* Red */
+        .val-neutral { color: #666; background: #eee; }
+
+        .chart-box { height: 250px; border: 2px solid #000; display: flex; align-items: flex-end; justify-content: space-around; padding: 10px; background: #fff; margin-top: 10px; }
+        .chart-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; flex: 1; height: 100%; }
+        .chart-bar { width: 12px; background: #d63384; border: 1px solid #000; transition: height 0.5s; min-height: 2px; }
+        .chart-val { font-size: 8px; margin-bottom: 2px; }
+        .chart-date { font-size: 8px; margin-top: 2px; transform: rotate(-45deg); height: 20px; }
+
+    </style>
+</head>
+<body>
+
+    <div id="phone-case">
+        <div class="status-bar">
+            <span>与妳酮行 OS v0.18</span>
+            <span id="clock">12:00</span>
+        </div>
+
+        <div id="desktop">
+            <div class="app-icon-container" onclick="openApp('app-water')">
+                <div class="app-icon" style="background:#e3f2fd">💧</div>
+                <div class="app-name">我爱喝水</div>
+            </div>
+            <div class="app-icon-container" onclick="openApp('app-body')">
+                <div class="app-icon" style="background:#b8e994">📊</div>
+                <div class="app-name">身体数据</div>
+            </div>
+            <div class="app-icon-container" onclick="openApp('app-settings')">
+                <div class="app-icon" style="background:#ddd">⚙️</div>
+                <div class="app-name">设置</div>
+            </div>
+        </div>
+
+        <div id="app-water" class="app-screen">
+            <div class="app-nav">
+                <button class="nes-btn is-error is-small" onclick="goHome()"> < 返回 </button>
+                <span style="font-weight:bold;">我爱喝水</span>
+                <div style="width:50px;"></div>
+            </div>
+            <div class="date-nav-bar" id="water-nav-bar">
+                <button class="date-btn" onclick="waterChangeDate(-1)"> < </button>
+                <div class="date-picker-trigger" onclick="document.getElementById('water-date-picker').showPicker()">
+                    <span id="water-date-display" style="font-weight:bold;">今天</span> 📅
+                </div>
+                <input type="date" id="water-date-picker" style="visibility: hidden; width: 0; position:absolute;" onchange="waterPickDate(this.value)">
+                <button class="date-btn" onclick="waterChangeDate(1)"> > </button>
+            </div>
+            <div class="water-dashboard" id="water-dash-bg">
+                <div class="bottle-container" id="bottle-layers"></div>
+                <div style="text-align: left; width: 50%;">
+                    <p style="font-size:12px; margin-bottom:5px;">完成度:</p>
+                    <progress class="nes-progress is-primary" value="0" max="100" id="progress-bar" style="height:20px; margin-bottom:10px;"></progress>
+                    <div style="font-size:10px; color:#555;">
+                        💧 总水: <span id="val-total">0</span> / <span id="goal-total">2000</span>ml<br>
+                        ⚡ 电解质: <span id="val-elec">0</span> / <span id="goal-elec">500</span>ml
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 10px;">
+                <label style="font-size:12px;">单次饮水量 (ml):</label>
+                <input type="number" id="drink-vol" class="nes-input is-small" value="250" style="margin-bottom:10px;">
+                <div class="drink-grid">
+                    <div class="drink-item" onclick="addWater('白开水', false)"><div class="drink-icon">🥤</div><span>白开水</span></div>
+                    <div class="drink-item" onclick="addWater('黑咖啡', false)"><div class="drink-icon">☕</div><span>黑咖啡</span></div>
+                    <div class="drink-item" onclick="addWater('电解质', true)"><div class="drink-icon">⚡</div><span>电解质</span></div>
+                    <div class="drink-item" onclick="addWater('柠檬水', false)"><div class="drink-icon">🍋</div><span>柠檬水</span></div>
+                    <div class="drink-item" onclick="addWater('淡盐水', true)"><div class="drink-icon">🧂</div><span>淡盐水</span></div>
+                    <div class="drink-item" onclick="addWater('茶', false)"><div class="drink-icon">🍵</div><span>茶</span></div>
+                </div>
+            </div>
+            <div style="padding:10px;">
+                <p style="border-bottom:2px solid #000; font-size:12px;">当日记录</p>
+                <div id="water-list" style="font-size:10px; height:100px; overflow-y:scroll;"></div>
+            </div>
+        </div>
+
+        <div id="app-body" class="app-screen">
+            <div class="app-nav">
+                <button class="nes-btn is-error is-small" onclick="goHome()"> < 返回 </button>
+                <span style="font-weight:bold;">身体数据</span>
+                <div style="width:50px;"></div>
+            </div>
+            
+            <div class="body-tabs">
+                <div class="body-tab-btn active" onclick="switchBodyTab('daily', this)">每日</div>
+                <div class="body-tab-btn" onclick="switchBodyTab('weekly', this)">每周</div>
+                <div class="body-tab-btn" onclick="switchBodyTab('summary', this)">汇总</div>
+            </div>
+
+            <div class="date-nav-bar" id="body-nav-bar">
+                <button class="date-btn" onclick="bodyChangeDate(-1)"> < </button>
+                <div class="date-picker-trigger" onclick="document.getElementById('body-date-picker').showPicker()">
+                    <span id="body-date-display" style="font-weight:bold;">今天</span> 📅
+                </div>
+                <input type="date" id="body-date-picker" style="visibility: hidden; width: 0; position:absolute;" onchange="bodyPickDate(this.value)">
+                <button class="date-btn" onclick="bodyChangeDate(1)"> > </button>
+            </div>
+
+            <div id="page-daily" class="sub-page active">
+                <div class="input-area">
+                    <div class="input-row">
+                        <div class="input-label">🩸 血糖</div>
+                        <div class="input-wrapper"><input type="number" id="in-glucose" class="nes-input is-compact"><span class="auto-unit">mmol/L</span></div>
+                        <span id="diff-glucose" class="diff-badge">-</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-label">🟣 血酮</div>
+                        <div class="input-wrapper"><input type="number" id="in-ketone" class="nes-input is-compact"><span class="auto-unit">mmol/L</span></div>
+                        <span id="diff-ketone" class="diff-badge">-</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-label">💧 尿酸</div>
+                        <div class="input-wrapper"><input type="number" id="in-ua" class="nes-input is-compact"><span class="auto-unit">umol/L</span></div>
+                        <span id="diff-ua" class="diff-badge">-</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-label">💓 血压</div>
+                        <div class="dual-container">
+                            <input type="number" id="in-bp-high" class="dual-input" placeholder="高"><span class="unit-suffix">/</span>
+                            <input type="number" id="in-bp-low" class="dual-input" placeholder="低"><span class="unit-suffix">mmHg</span>
+                        </div>
+                        <span id="diff-bp" class="diff-badge">-</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-label">⚖️ 体重</div>
+                        <div class="dual-container">
+                            <input type="number" id="in-weight-daily-kg" class="dual-input" oninput="syncWeight(this, 'daily', 'kg')"><span class="unit-suffix">kg</span>
+                            <input type="number" id="in-weight-daily-jin" class="dual-input" oninput="syncWeight(this, 'daily', 'jin')"><span class="unit-suffix">斤</span>
+                        </div>
+                        <span id="diff-weight-daily" class="diff-badge">-</span>
+                    </div>
+
+                    <button class="nes-btn is-primary" style="width:100%; margin-top:10px;" onclick="saveDaily()">💾 更新数据</button>
+
+                    <div class="diary-section">
+                        <div style="text-align:center;"><div class="diary-title">💬 有话说</div></div>
+                        <textarea id="in-note-daily" class="diary-input" placeholder="今天感觉怎么样？有没有偷吃？..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-weekly" class="sub-page">
+                <div class="input-area">
+                    <div class="input-row" id="row-height" style="display:none;">
+                        <div class="input-label">🧍 身高</div>
+                        <div class="input-wrapper"><input type="number" id="in-height" class="nes-input is-compact" oninput="calcWeeklyStats()"><span class="auto-unit">cm</span></div>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-label">⚖️ 体重</div>
+                        <div class="dual-container">
+                            <input type="number" id="in-weight-weekly-kg" class="dual-input" oninput="syncWeight(this, 'weekly', 'kg'); calcWeeklyStats();"><span class="unit-suffix">kg</span>
+                            <input type="number" id="in-weight-weekly-jin" class="dual-input" oninput="syncWeight(this, 'weekly', 'jin'); calcWeeklyStats();"><span class="unit-suffix">斤</span>
+                        </div>
+                        <span id="diff-weight-weekly" class="diff-badge">-</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-label">🧵 腰围</div>
+                        <div class="input-wrapper"><input type="number" id="in-waist" class="nes-input is-compact" oninput="calcWeeklyStats()"><span class="auto-unit">cm</span></div>
+                        <span id="diff-waist" class="diff-badge">-</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-label">🍑 臀围</div>
+                        <div class="input-wrapper"><input type="number" id="in-hip" class="nes-input is-compact" oninput="calcWeeklyStats()"><span class="auto-unit">cm</span></div>
+                        <span id="diff-hip" class="diff-badge">-</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-label">🥓 脂肪量</div>
+                        <div class="input-wrapper"><input type="number" id="in-fat" class="nes-input is-compact" oninput="calcWeeklyStats()"><span class="auto-unit">kg</span></div>
+                        <span id="diff-fat" class="diff-badge">-</span>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-label">💪 肌肉量</div>
+                        <div class="input-wrapper"><input type="number" id="in-muscle" class="nes-input is-compact"><span class="auto-unit">kg</span></div>
+                        <span id="diff-muscle" class="diff-badge">-</span>
+                    </div>
+
+                    <div class="calc-stats">
+                        <div class="calc-item"><div class="calc-val" id="calc-bmi">-</div><div class="calc-label">BMI</div></div>
+                        <div class="calc-item"><div class="calc-val" id="calc-whr">-</div><div class="calc-label">腰臀比</div></div>
+                        <div class="calc-item"><div class="calc-val" id="calc-fatrate">-</div><div class="calc-label">体脂率</div></div>
+                    </div>
+
+                    <button class="nes-btn is-warning" style="width:100%; margin-top:10px;" onclick="saveWeekly()">💾 更新数据</button>
+
+                    <div class="diary-section">
+                        <div style="text-align:center;"><div class="diary-title">💬 有话说</div></div>
+                        <textarea id="in-note-weekly" class="diary-input" placeholder="本周总结..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-summary" class="sub-page">
+                <div class="summary-source-switch">
+                    <button class="summary-source-btn active" id="btn-src-daily" onclick="setSummarySource('daily')">📅 每日数据</button>
+                    <button class="summary-source-btn" id="btn-src-weekly" onclick="setSummarySource('weekly')">📏 每周数据</button>
+                </div>
+                
+                <div class="metric-scroll-nav" id="metric-nav"></div>
+
+                <div class="summary-view-toggle">
+                    <button class="sum-view-btn active" id="sum-btn-table" onclick="setSummaryView('table')">表格</button>
+                    <button class="sum-view-btn" id="sum-btn-chart" onclick="setSummaryView('chart')">趋势图</button>
+                </div>
+
+                <div id="summary-content" class="summary-content"></div>
+            </div>
+        </div>
+
+        <div id="app-settings" class="app-screen">
+            <div class="app-nav">
+                <button class="nes-btn is-error is-small" onclick="goHome()"> < 返回 </button>
+                <span style="font-weight:bold;">设置</span>
+                <div style="width:50px;"></div>
+            </div>
+            <div style="padding:20px;">
+                <button class="nes-btn is-primary" style="width:100%; margin-bottom:15px;" onclick="exportData()">📤 导出备份</button>
+                <label class="nes-btn" style="width:100%; margin-bottom:15px; text-align:center;">
+                    📥 恢复数据 <input type="file" id="import-file" style="display:none;" onchange="importData(this)">
+                </label>
+                <button class="nes-btn is-error" style="width:100%; margin-top:30px;" onclick="clearAllData()">🗑️ 清空所有</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() { document.getElementById('clock').innerText = new Date().toTimeString().slice(0,5); }
+        setInterval(updateClock, 1000);
+        function openApp(id) {
+            document.getElementById('desktop').style.display='none'; document.getElementById(id).style.display='flex';
+            if(id==='app-water'){waterViewOffset=0;renderWaterApp();}
+            if(id==='app-body'){bodyViewOffset=0; switchBodyTab('daily', document.querySelector('.body-tab-btn.active') || document.querySelector('.body-tab-btn')); }
+        }
+        function goHome() { document.querySelectorAll('.app-screen').forEach(e=>e.style.display='none'); document.getElementById('desktop').style.display='flex'; }
+
+        // 喝水逻辑
+        const DRINK_CONFIG={'白开水':{c:'#29b6f6',i:'🥤'},'黑咖啡':{c:'#5d4037',i:'☕'},'电解质':{c:'#7e57c2',i:'⚡'},'柠檬水':{c:'#fbc02d',i:'🍋'},'淡盐水':{c:'#4dd0e1',i:'🧂'},'茶':{c:'#66bb6a',i:'🍵'},'default':{c:'#ccc',i:'❓'}};
+        let waterViewOffset=0, GOAL_TOTAL=2000;
+        function waterChangeDate(o){ waterViewOffset+=o; if(waterViewOffset>0) waterViewOffset=0; renderWaterApp(); }
+        function waterPickDate(v){ if(!v)return; const p=new Date(v.split('-')[0],v.split('-')[1]-1,v.split('-')[2]); const t=new Date(); t.setHours(0,0,0,0); const d=Math.round((p-t)/86400000); if(d>0)return; waterViewOffset=d; renderWaterApp(); }
+        function getWaterDateStr(){ const d=new Date(); d.setDate(d.getDate()+waterViewOffset); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+        function addWater(t,e){ const v=parseInt(document.getElementById('drink-vol').value); if(!v)return; const d=JSON.parse(localStorage.getItem("keto_water_v2")||"[]"); d.unshift({id:Date.now(),date:getWaterDateStr(),time:waterViewOffset===0?new Date().toTimeString().slice(0,5):"补录",type:t,amount:v,isElec:e}); localStorage.setItem("keto_water_v2",JSON.stringify(d)); renderWaterApp(); }
+        function renderWaterApp(){
+            const ds=getWaterDateStr(), d=JSON.parse(localStorage.getItem("keto_water_v2")||"[]").filter(i=>i.date===ds);
+            document.getElementById("water-date-display").innerText=waterViewOffset===0?"今天":ds;
+            const bg=document.getElementById("water-dash-bg"), nb=document.getElementById("water-nav-bar");
+            if(waterViewOffset!==0){bg.classList.add("history-mode");nb.classList.add("history-mode");}else{bg.classList.remove("history-mode");nb.classList.remove("history-mode");}
+            let tot=0,elec=0,html="",tots={}; Object.keys(DRINK_CONFIG).forEach(k=>tots[k]=0);
+            d.forEach(i=>{ tot+=i.amount; if(i.isElec)elec+=i.amount; tots[i.type]=(tots[i.type]||0)+i.amount; const c=DRINK_CONFIG[i.type]||DRINK_CONFIG.default; html+=`<div class="log-entry"><span><span class="dot" style="background:${c.c}"></span>${i.time} ${i.type} (${i.amount}ml)</span></div>`; });
+            document.getElementById('water-list').innerHTML=html||"<p style='text-align:center;color:#ccc'>未饮水</p>";
+            let bHtml=""; Object.keys(DRINK_CONFIG).forEach(k=>{ if(tots[k]>0){ const h=(tots[k]/GOAL_TOTAL)*100; bHtml+=`<div class="water-layer" style="height:${h}%;background:${DRINK_CONFIG[k].c}">${h>6?DRINK_CONFIG[k].i+tots[k]:''}</div>`; } });
+            document.getElementById('bottle-layers').innerHTML=bHtml; document.getElementById('val-total').innerText=tot; document.getElementById('val-elec').innerText=elec; document.getElementById('progress-bar').value=Math.min((tot/GOAL_TOTAL)*100,100);
+        }
+
+        // 身体数据逻辑 v0.18
+        // 核心配置：哪些指标越低越好(bad if up)
+        const BODY_CFG = {
+            lowerGood: ['weight', 'glucose', 'fat', 'waist', 'hip', 'ua', 'bp-high', 'bp-low'],
+            higherGood: ['muscle'] // ketone 移除，走独立逻辑
+        };
+        const SUMMARY_METRICS = {
+            daily: [ {id:'weight', name:'体重', unit:'kg'}, {id:'glucose', name:'血糖', unit:'mmol/L'}, {id:'ketone', name:'血酮', unit:'mmol/L'}, {id:'ua', name:'尿酸', unit:'umol/L'}, {id:'bp', name:'血压', unit:''} ],
+            weekly: [ {id:'weight', name:'体重', unit:'kg'}, {id:'waist', name:'腰围', unit:'cm'}, {id:'hip', name:'臀围', unit:'cm'}, {id:'fat', name:'脂肪量', unit:'kg'}, {id:'muscle', name:'肌肉量', unit:'kg'} ]
+        };
+
+        let bodyViewOffset = 0; let currentTab = 'daily'; 
+        let sumSource = 'daily'; let sumMetric = 'weight'; let sumView = 'table';
+
+        function bodyChangeDate(o){ bodyViewOffset+=o; if(bodyViewOffset>0) bodyViewOffset=0; updateBodyUI(); }
+        function bodyPickDate(v){ if(!v)return; const p=new Date(v.split('-')[0],v.split('-')[1]-1,v.split('-')[2]); const t=new Date(); t.setHours(0,0,0,0); const d=Math.round((p-t)/86400000); if(d>0)return; bodyViewOffset=d; updateBodyUI(); }
+        function getBodyDateStr(){ const d=new Date(); d.setDate(d.getDate()+bodyViewOffset); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); }
+
+        function switchBodyTab(tab, btn) {
+            currentTab = tab;
+            document.querySelectorAll('.body-tab-btn').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            document.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-'+tab).classList.add('active');
+            document.getElementById('body-nav-bar').style.display = tab==='summary' ? 'none' : 'flex';
+            if(tab === 'summary') initSummary();
+            else updateBodyUI();
+        }
+
+        function updateBodyUI() {
+            const dateStr = getBodyDateStr();
+            document.getElementById("body-date-display").innerText = bodyViewOffset===0?"今天":dateStr;
+            const nb = document.getElementById("body-nav-bar");
+            const ia = document.querySelector(".input-area");
+            if(bodyViewOffset!==0){ nb.classList.add("history-mode"); if(ia)ia.classList.add("history-mode"); }
+            else { nb.classList.remove("history-mode"); if(ia)ia.classList.remove("history-mode"); }
+            if(currentTab === 'daily') loadInputData('daily');
+            else if(currentTab === 'weekly') loadInputData('weekly');
+        }
+
+        function getHistory(type) { return JSON.parse(localStorage.getItem(type==='daily'?'keto_log_daily_v13':'keto_log_weekly_v13') || "[]"); }
+        function saveHistory(type, data) { localStorage.setItem(type==='daily'?'keto_log_daily_v13':'keto_log_weekly_v13', JSON.stringify(data)); }
+
+        function syncWeight(source, type, unit) {
+            const val = parseFloat(source.value);
+            if(isNaN(val)) return; 
+            const kgInput = document.getElementById(`in-weight-${type}-kg`);
+            const jinInput = document.getElementById(`in-weight-${type}-jin`);
+            if(unit === 'kg') { jinInput.value = (val * 2).toFixed(1); } else { kgInput.value = (val / 2).toFixed(1); }
+        }
+
+        function loadInputData(type) {
+            const dateStr = getBodyDateStr();
+            const history = getHistory(type);
+            const todayRecord = history.find(r => r.date === dateStr);
+            const container = document.getElementById(type==='daily'?'page-daily':'page-weekly');
+            
+            container.querySelectorAll('input, textarea').forEach(i => i.value = ''); 
+            container.querySelectorAll('.diff-badge').forEach(b => { b.className='diff-badge'; b.innerText='-'; });
+            document.getElementById('calc-bmi').innerText='-'; document.getElementById('calc-whr').innerText='-'; document.getElementById('calc-fatrate').innerText='-';
+
+            const savedH = localStorage.getItem('keto_user_height');
+            if(!savedH && type==='weekly') document.getElementById('row-height').style.display = 'flex';
+            else if(type==='weekly') document.getElementById('row-height').style.display = 'none';
+
+            if(todayRecord) {
+                Object.keys(todayRecord.data).forEach(k => {
+                    const val = todayRecord.data[k];
+                    if(k === 'weight') {
+                        const kgIn = document.getElementById(`in-weight-${type}-kg`);
+                        const jinIn = document.getElementById(`in-weight-${type}-jin`);
+                        if(kgIn && jinIn) { kgIn.value = val; jinIn.value = val * 2; }
+                    } else {
+                        const input = document.getElementById('in-'+k);
+                        if(input) input.value = val;
+                    }
+                });
+                if(todayRecord.note) { document.getElementById(`in-note-${type}`).value = todayRecord.note; }
+                if(type==='weekly') calcWeeklyStats();
+            }
+
+            const prevRecord = history.find(r => new Date(r.date) < new Date(dateStr));
+            if(todayRecord && prevRecord) renderDiffBadges(type, todayRecord.data, prevRecord.data);
+        }
+
+        function calcWeeklyStats() {
+            const wKg = parseFloat(document.getElementById('in-weight-weekly-kg').value);
+            const waist = parseFloat(document.getElementById('in-waist').value);
+            const hip = parseFloat(document.getElementById('in-hip').value);
+            const fatKg = parseFloat(document.getElementById('in-fat').value);
+            let height = localStorage.getItem('keto_user_height');
+            const hInput = document.getElementById('in-height').value;
+            if(hInput) height = hInput;
+            
+            if(wKg && height) { document.getElementById('calc-bmi').innerText = (wKg/((height/100)**2)).toFixed(1); }
+            if(waist && hip) { document.getElementById('calc-whr').innerText = (waist/hip).toFixed(2); }
+            if(fatKg && wKg) { document.getElementById('calc-fatrate').innerText = ((fatKg/wKg)*100).toFixed(1) + '%'; }
+        }
+
+        // v0.18: 判断指标好坏的通用逻辑 (input页和summary页共用)
+        function checkMetricTrend(key, diff, currentVal) {
+            if(Math.abs(diff) < 0.1) return 'neutral';
+            
+            // 特殊逻辑：血酮
+            if(key === 'ketone') {
+                if(currentVal < 3.0) return diff > 0 ? 'good' : 'bad'; // <3时，涨是好的
+                else return diff < 0 ? 'good' : 'bad'; // >=3时，跌是好的
+            }
+            // 常规逻辑
+            if(BODY_CFG.higherGood.includes(key)) return diff > 0 ? 'good' : 'bad';
+            if(BODY_CFG.lowerGood.includes(key)) return diff < 0 ? 'good' : 'bad';
+            
+            return 'neutral';
+        }
+
+        function renderDiffBadges(type, currData, prevData) {
+            Object.keys(currData).forEach(k => {
+                let badgeId = 'diff-' + k;
+                if(k === 'weight') badgeId = type==='daily'?'diff-weight-daily':'diff-weight-weekly';
+                if(k === 'bp-high' || k === 'bp-low') badgeId = 'diff-bp'; 
+                const badge = document.getElementById(badgeId);
+                
+                if(k.startsWith('bp-')) {
+                    if(prevData['bp-high'] && prevData['bp-low']) {
+                        const dh = currData['bp-high'] - prevData['bp-high'];
+                        const dl = currData['bp-low'] - prevData['bp-low'];
+                        const hArrow = dh>0?'↑':'↓'; const lArrow = dl>0?'↑':'↓';
+                        badge.innerText = `H${hArrow}${Math.abs(dh)} L${lArrow}${Math.abs(dl)}`;
+                        // 血压简易判断：只要有涨就红
+                        if(dh>0 || dl>0) badge.className = "diff-badge diff-bad"; else if(dh==0 && dl==0) badge.className = "diff-badge"; else badge.className = "diff-badge diff-good";
+                    }
+                    return;
+                }
+                if(!badge || !prevData[k]) return;
+                const diff = currData[k] - prevData[k];
+                const trend = checkMetricTrend(k, diff, currData[k]);
+                
+                if(trend === 'neutral') { badge.innerText = "持平"; badge.className = "diff-badge"; }
+                else {
+                    const arrow = diff > 0 ? "↑" : "↓";
+                    const diffVal = k === 'weight' ? (Math.abs(diff)*2).toFixed(1) : Math.abs(diff).toFixed(1);
+                    badge.innerText = arrow + diffVal;
+                    badge.className = "diff-badge " + (trend==='good' ? "diff-good" : "diff-bad");
+                }
+            });
+        }
+
+        function saveRecord(type) {
+            const dateStr = getBodyDateStr();
+            const timeStr = bodyViewOffset===0 ? new Date().toTimeString().slice(0,5) : "补录";
+            let rawData = {};
+            const ids = type==='daily' ? ['glucose','ketone','ua','bp-high','bp-low'] : ['waist','hip','fat','muscle','height'];
+            ids.forEach(k => { const el = document.getElementById('in-'+k); if(el && el.value) rawData[k] = parseFloat(el.value); });
+            const wId = type==='daily' ? 'in-weight-daily-kg' : 'in-weight-weekly-kg';
+            const wVal = document.getElementById(wId).value;
+            if(wVal) rawData['weight'] = parseFloat(wVal); 
+
+            if(Object.keys(rawData).length === 0 && !document.getElementById(`in-note-${type}`).value) { alert("数据或内容为空"); return; }
+            if(rawData.height) localStorage.setItem('keto_user_height', rawData.height);
+
+            let history = getHistory(type);
+            const idx = history.findIndex(r => r.date === dateStr);
+            const newRecord = { id: Date.now(), date: dateStr, time: timeStr, data: rawData, note: document.getElementById(`in-note-${type}`).value };
+
+            if(idx !== -1) { if(confirm("更新当天的记录？")) history[idx] = newRecord; else return; } else { history.unshift(newRecord); }
+            history.sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            saveHistory(type, history);
+            alert("已更新！"); loadInputData(type); 
+        }
+
+        function saveDaily() { saveRecord('daily'); }
+        function saveWeekly() { saveRecord('weekly'); }
+        function showKgHint(input, hintId) { const v = parseFloat(input.value); document.getElementById(hintId).innerText = !isNaN(v) ? (v/2).toFixed(1)+'kg' : ''; }
+
+        // --- 汇总页逻辑 (v0.18: 修复颜色判断) ---
+        function initSummary() { setSummarySource('daily'); }
+
+        function setSummarySource(src) {
+            sumSource = src;
+            document.getElementById('btn-src-daily').className = 'summary-source-btn' + (src==='daily'?' active':'');
+            document.getElementById('btn-src-weekly').className = 'summary-source-btn' + (src==='weekly'?' active':'');
+            const metrics = SUMMARY_METRICS[src];
+            let navHtml = "";
+            metrics.forEach((m, idx) => { navHtml += `<div class="metric-chip ${idx===0?'active':''}" onclick="setSummaryMetric('${m.id}', this)">${m.name}</div>`; });
+            document.getElementById('metric-nav').innerHTML = navHtml;
+            if(metrics.length > 0) setSummaryMetric(metrics[0].id, document.querySelector('.metric-chip'));
+        }
+
+        function setSummaryMetric(metricId, btn) {
+            sumMetric = metricId;
+            document.querySelectorAll('.metric-chip').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            renderSummaryContent();
+        }
+
+        function setSummaryView(view) {
+            sumView = view;
+            document.getElementById('sum-btn-table').className = 'sum-view-btn' + (view==='table'?' active':'');
+            document.getElementById('sum-btn-chart').className = 'sum-view-btn' + (view==='chart'?' active':'');
+            renderSummaryContent();
+        }
+
+        function renderSummaryContent() {
+            const container = document.getElementById('summary-content');
+            const history = getHistory(sumSource);
+            const metricList = SUMMARY_METRICS[sumSource];
+            const currentMetricObj = metricList.find(m => m.id === sumMetric);
+            const unit = currentMetricObj ? currentMetricObj.unit : '';
+            
+            const dataList = history.filter(r => {
+                if(sumMetric === 'bp') return r.data['bp-high'] && r.data['bp-low'];
+                return r.data[sumMetric] !== undefined && r.data[sumMetric] !== '';
+            });
+
+            if(dataList.length === 0) { container.innerHTML = "<p style='text-align:center;color:#999;margin-top:20px;'>暂无数据</p>"; return; }
+
+            if(sumView === 'table') {
+                let rows = "";
+                dataList.forEach((r, idx) => {
+                    let valDisplay = "";
+                    let diffDisplay = "";
+                    
+                    if(sumMetric === 'bp') {
+                        valDisplay = `${r.data['bp-high']}/${r.data['bp-low']}`;
+                        if(idx < dataList.length - 1) {
+                            const prev = dataList[idx+1];
+                            if(prev.data['bp-high']) {
+                                const dh = r.data['bp-high'] - prev.data['bp-high'];
+                                const dl = r.data['bp-low'] - prev.data['bp-low'];
+                                const ha = dh>0?'↑':'↓'; const la = dl>0?'↑':'↓';
+                                // v0.18: 血压也显示变化了
+                                const colorClass = (dh>0||dl>0) ? 'val-bad' : (dh==0&&dl==0?'val-neutral':'val-good');
+                                diffDisplay = `<span class="val-change ${colorClass}">H${ha}${Math.abs(dh)} L${la}${Math.abs(dl)}</span>`;
+                            }
+                        }
+                    } else {
+                        let val = parseFloat(r.data[sumMetric]);
+                        valDisplay = val + unit;
+                        
+                        if(idx < dataList.length - 1) {
+                            const prev = dataList[idx+1]; 
+                            if(prev.data[sumMetric]) {
+                                const prevVal = parseFloat(prev.data[sumMetric]);
+                                const diff = val - prevVal;
+                                const trend = checkMetricTrend(sumMetric, diff, val); // v0.18: 使用通用判断逻辑
+                                if(trend !== 'neutral') {
+                                    const arrow = diff>0?'↑':'↓';
+                                    const color = trend==='good' ? 'val-good' : 'val-bad';
+                                    diffDisplay = `<span class="val-change ${color}">${arrow}${Math.abs(diff).toFixed(1)}</span>`;
+                                }
+                            }
+                        }
+                    }
+                    rows += `<tr><td>${r.date}<br><span style="font-size:8px;color:#999">${r.time}</span></td><td style="font-weight:bold;">${valDisplay} ${diffDisplay}</td></tr>`;
+                });
+                container.innerHTML = `<table class="report-table"><tr><th>日期</th><th>${currentMetricObj.name}</th></tr>${rows}</table>`;
+            } else {
+                if(sumMetric === 'bp') { container.innerHTML="<p style='text-align:center;margin-top:20px;'>血压暂不支持趋势图</p>"; return; }
+                const chartData = dataList.slice(0, 15).reverse(); 
+                if(chartData.length < 2) { container.innerHTML="<p style='text-align:center;margin-top:20px;'>数据不足以生成图表</p>"; return; }
+                const vals = chartData.map(r => parseFloat(r.data[sumMetric]));
+                const min = Math.min(...vals) * 0.9; const max = Math.max(...vals) * 1.1;
+                let bars = "";
+                chartData.forEach((r, i) => {
+                    const val = parseFloat(r.data[sumMetric]);
+                    const h = ((val - min) / (max - min)) * 80 + 10;
+                    bars += `<div class="chart-col"><span class="chart-val">${val}</span><div class="chart-bar" style="height:${h}%"></div><div class="chart-date">${r.date.slice(5)}</div></div>`;
+                });
+                container.innerHTML = `<div class="chart-box">${bars}</div><p style="text-align:center;font-size:10px;color:#999;">${currentMetricObj.name}趋势 (近15次)</p>`;
+            }
+        }
+
+        function exportData() { const d={ w: JSON.parse(localStorage.getItem("keto_water_v2")||"[]"), d13: JSON.parse(localStorage.getItem("keto_log_daily_v13")||"[]"), k13: JSON.parse(localStorage.getItem("keto_log_weekly_v13")||"[]") }; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"json"})); a.download=`keto_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
+        function importData(i) { const r=new FileReader(); r.onload=e=>{try{const d=JSON.parse(e.target.result); if(confirm("覆盖数据？")){if(d.w) localStorage.setItem("keto_water_v2",JSON.stringify(d.w)); if(d.d13) localStorage.setItem("keto_log_daily_v13",JSON.stringify(d.d13));if(d.k13) localStorage.setItem("keto_log_weekly_v13",JSON.stringify(d.k13)); location.reload();}}catch(e){alert("文件错误")}}; if(i.files[0])r.readAsText(i.files[0]); }
+        function clearAllData() { if(confirm("清空?")) { localStorage.clear(); location.reload(); } }
+        window.onload = function() { updateClock(); }
+    </script>
+</body>
+</html>
