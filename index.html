@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>与妳酮行 OS v0.33</title>
+    <title>与妳酮行 OS v0.34</title>
     <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
     
@@ -15,7 +15,7 @@
         
         #launcher { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 25px; overflow-y: auto; background-color: #fff0f5; }
 
-        /* Widget v0.33 */
+        /* Widget */
         .widget-card { background: #fff; border: 4px solid #000; border-radius: 16px; padding: 15px; box-shadow: 8px 8px 0 rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; min-height: 200px; }
         .widget-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 5px; }
         .widget-time { font-size: 32px; font-weight: bold; color: #333; line-height: 1.2; font-family: 'Courier New', monospace; letter-spacing: -1px;}
@@ -34,14 +34,14 @@
         .sched-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); flex-shrink: 0;}
         .expand-btn { font-size: 10px; color: #2196f3; cursor: pointer; margin-top: 2px; text-decoration: underline; background: none; border: none; padding: 0; }
         
-        /* APP Grid */
+        /* App Icons */
         .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; justify-items: center; padding-bottom: 20px; }
         .app-btn { width: 100%; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
         .app-btn-icon { width: 55px; height: 55px; background-color: #fff; border: 3px solid #000; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 26px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); transition: transform 0.1s; }
         .app-btn:active .app-btn-icon { transform: translate(2px, 2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
         .app-btn-name { font-size: 10px; margin-top: 6px; font-weight: bold; color: #333; text-align: center; white-space: nowrap; }
 
-        /* Apps Common */
+        /* Common App UI */
         .app-screen { display: none; flex: 1; background-color: #fff; flex-direction: column; overflow-y: auto; padding-bottom: 20px; }
         .app-nav { background-color: #b8e994; padding: 10px; border-bottom: 3px solid #000; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .date-nav-bar { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; background-color: #fff3cd; border-bottom: 2px dashed #ccc; font-size: 12px; flex-shrink: 0; }
@@ -71,12 +71,11 @@
         .goal-settings { margin: 10px 15px; border: 2px dashed #999; padding: 5px; border-radius: 5px; font-size: 10px; background: #fdfdfd; }
         .goal-row { display: flex; align-items: center; margin-top: 5px; gap: 5px; }
 
-        /* --- v0.33 身体数据：绝对对齐修复 --- */
+        /* Body Data UI */
         .body-tabs { display: flex; border-bottom: 3px solid #000; background: #ddd; flex-shrink: 0; }
         .body-tab-btn { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-size: 12px; font-weight: bold; border-right: 2px solid #000; background: #eee; position: relative; }
         .body-tab-btn.active { background: #fff; color: #d63384; }
         .body-tab-btn.active::after { content: ''; position: absolute; bottom: -3px; left: 0; width: 100%; height: 3px; background: #fff; } 
-        
         .sub-page { display: none; flex: 1; flex-direction: column; }
         .sub-page.active { display: flex; }
         .input-area { padding: 15px; background: #fff; flex: 1; }
@@ -85,74 +84,21 @@
         .layout-row { display: flex; align-items: center; margin-bottom: 15px; min-height: 38px; }
         .layout-label { width: 60px; min-width: 60px; font-size: 12px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; color: #333; }
 
-        .fix-box {
-            display: flex !important;
-            align-items: center !important;
-            background: #fff;
-            border: 4px solid #000 !important;
-            border-radius: 8px !important;
-            padding: 0 8px !important;
-            height: 38px !important;
-            box-sizing: border-box !important;
-            width: 100%;
-            position: relative;
-        }
+        /* Input Styles */
+        .fix-box { display: flex !important; align-items: center !important; background: #fff; border: 4px solid #000 !important; border-radius: 8px !important; padding: 0 8px !important; height: 38px !important; box-sizing: border-box !important; width: 100%; position: relative; }
         .history-mode .fix-box { background: #eee; }
+        
+        /* 🚫 Hide Spin Buttons */
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 
-        /* 隐藏数字输入框的上下箭头 (Spin Buttons) */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        input[type=number] {
-            -moz-appearance: textfield; 
-            appearance: textfield;
-        }
-
-        .fix-input {
-            flex: 1 !important; 
-            width: 0 !important;
-            min-width: 0 !important; 
-            border: none !important;
-            outline: none !important;
-            background: transparent !important;
-            font-family: "Microsoft YaHei", sans-serif;
-            font-size: 12px;
-            font-weight: bold;
-            color: #333;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
+        .fix-input { flex: 1 !important; width: 0 !important; min-width: 0 !important; border: none !important; outline: none !important; background: transparent !important; font-family: "Microsoft YaHei", sans-serif; font-size: 12px; font-weight: bold; color: #333; padding: 0 !important; margin: 0 !important; }
         .fix-input::placeholder { color: #ccc; font-weight: normal; font-size: 10px; }
+        .fix-unit { font-size: 9px; color: #888; font-weight: bold; margin-left: 2px; flex-shrink: 0 !important; white-space: nowrap !important; }
 
-        .fix-unit {
-            font-size: 9px; /* 微调：稍微缩小一点点以防溢出 */
-            color: #888;
-            font-weight: bold;
-            margin-left: 2px;
-            flex-shrink: 0 !important; 
-            white-space: nowrap !important;
-        }
+        .multi-col { display: flex; gap: 8px; flex: 1; align-items: center; }
+        .col-item { flex: 1; width: 0; min-width: 0; } 
 
-        /* v0.33 双栏容器：强制均分 */
-        .multi-col { 
-            display: flex; 
-            gap: 8px; 
-            flex: 1;  
-            align-items: center; 
-        }
-        /* 关键修复：添加 width: 0; 
-           这告诉 Flexbox 忽略内容的原始宽度（比如较长的 mmHg），
-           强行按 50% 均分空间。
-        */
-        .col-item { 
-            flex: 1; 
-            width: 0; 
-            min-width: 0; 
-        } 
-
-        /* 涨跌徽章：v0.33 移除所有差异化，统一宽度 */
         .diff-badge { width: 45px; height: 38px; display: flex; justify-content: center; align-items: center; font-size: 9px; font-weight: bold; border-radius: 4px; border: 2px solid rgba(0,0,0,0.1); background: #eee; color: #999; flex-shrink: 0; white-space: nowrap; margin-left: 5px;}
         .diff-good { background: #d4edda; color: #155724; border-color: #c3e6cb; }
         .diff-bad { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
@@ -188,6 +134,7 @@
         .chart-val { font-size: 8px; margin-bottom: 2px; }
         .chart-date { font-size: 8px; margin-top: 2px; transform: rotate(-45deg); height: 20px; }
 
+        /* Calendar */
         .calendar-header { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f0f0f0; border-bottom: 2px solid #000; }
         .calendar-title { font-weight: bold; font-size: 14px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 10px; background: #fff; }
@@ -222,7 +169,7 @@
 
     <div id="phone-case">
         <div class="status-bar">
-            <span>与妳酮行 OS v0.33</span>
+            <span>与妳酮行 OS v0.34</span>
             <span id="clock">12:00</span>
         </div>
 
@@ -464,6 +411,11 @@
     </div>
 
     <script>
+        // --- 1. Global & Utility ---
+        let calCurrentDate = new Date();
+        let calSelectedDateStr = "";
+        let schedExpanded = false; 
+        
         function updateClock() {
             const now = new Date();
             const timeStr = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
@@ -480,18 +432,138 @@
         function openApp(id) {
             document.getElementById('launcher').style.display='none'; 
             document.getElementById(id).style.display='flex';
-            if(id==='app-water'){waterViewOffset=0;renderWaterApp();}
-            if(id==='app-body'){bodyViewOffset=0; switchBodyTab('daily', document.querySelector('.body-tab-btn.active') || document.querySelector('.body-tab-btn')); }
-            if(id==='app-calendar'){renderCalendar();} 
-            if(id==='app-settings'){loadColorLabels();} 
+            
+            if(id==='app-water'){ waterViewOffset=0; renderWaterApp(); }
+            if(id==='app-body'){ bodyViewOffset=0; switchBodyTab('daily', document.querySelector('.body-tab-btn.active') || document.querySelector('.body-tab-btn')); }
+            // 修复：确保日历渲染被调用
+            if(id==='app-calendar'){ renderCalendar(); } 
+            if(id==='app-settings'){ loadColorLabels(); } 
         }
+        
         function goHome() { 
             document.querySelectorAll('.app-screen').forEach(e=>e.style.display='none'); 
             document.getElementById('launcher').style.display = 'flex'; 
             updateWidget();
         }
 
-        let schedExpanded = false; 
+        // --- 2. Calendar Logic (Moved Up for Safety) ---
+        function renderCalendar() {
+            const year = calCurrentDate.getFullYear();
+            const month = calCurrentDate.getMonth(); 
+            document.getElementById('cal-month-title').innerText = `${year}年${month+1}月`;
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month+1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startDayOfWeek = firstDay.getDay(); 
+            const grid = document.getElementById('calendar-days');
+            grid.innerHTML = "";
+            
+            for(let i=0; i<startDayOfWeek; i++) { grid.innerHTML += `<div></div>`; }
+            
+            for(let d=1; d<=daysInMonth; d++) {
+                const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+                const wData = JSON.parse(localStorage.getItem("keto_water_v2")||"[]").filter(i => { return i.date === dateStr || i.date === `${year}-${month+1}-${d}`; });
+                
+                let wMark = "";
+                if(wData.length > 0) { 
+                    const total = wData.reduce((acc,cur)=>acc+cur.amount, 0); 
+                    wMark = total >= GOAL_TOTAL ? "<span style='color:green'>✔</span>" : "<span style='color:red'>✘</span>"; 
+                }
+                
+                const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}");
+                const dayInfo = calData[dateStr] || calData[`${year}-${month+1}-${d}`] || { schedules: [] };
+                
+                let dotsHtml = "";
+                if(dayInfo.schedules) {
+                    const showCount = Math.min(dayInfo.schedules.length, 4);
+                    for(let i=0; i<showCount; i++) { 
+                        const col = dayInfo.schedules[i].color; 
+                        dotsHtml += `<div class="s-dot dot-color-${col}"></div>`; 
+                    }
+                    if(dayInfo.schedules.length > 4) dotsHtml += `<span style="font-size:8px;line-height:6px;">+</span>`;
+                }
+                
+                const hasMemo = dayInfo.memo ? `<div class="memo-dot" style="display:block"></div>` : "";
+                const activeClass = dateStr === calSelectedDateStr ? "active" : "";
+                
+                // Today Check
+                const now = new Date();
+                const todayStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
+                const todayClass = dateStr === todayStr ? "today" : "";
+                
+                grid.innerHTML += `<div class="calendar-cell ${activeClass} ${todayClass}" onclick="selectCalDate('${dateStr}')"><span class="day-num">${d}</span><div class="schedule-dots">${dotsHtml}</div><div class="water-mark">${wMark}</div>${hasMemo}</div>`;
+            }
+        }
+
+        function changeMonth(delta) { calCurrentDate.setMonth(calCurrentDate.getMonth() + delta); renderCalendar(); }
+        function selectCalDate(dateStr) { calSelectedDateStr = dateStr; renderCalendar(); loadCalDayDetail(); }
+        
+        function loadCalDayDetail() {
+            document.getElementById('cal-detail-date').innerText = calSelectedDateStr;
+            const dailyHist = JSON.parse(localStorage.getItem("keto_log_daily_v13")||"[]");
+            const record = dailyHist.find(r => r.date === calSelectedDateStr);
+            const html = record ? `<div class="detail-row"><span>🩸 血糖:</span><b>${record.data.glucose||'-'}</b></div><div class="detail-row"><span>🟣 血酮:</span><b>${record.data.ketone||'-'}</b></div><div class="detail-row"><span>💧 尿酸:</span><b>${record.data.ua||'-'}</b></div>` : `<p style="text-align:center;color:#ccc;font-size:10px;">今日无身体数据</p>`;
+            document.getElementById('cal-health-data').innerHTML = html;
+            
+            const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}");
+            const dayInfo = calData[calSelectedDateStr] || { schedules:[], memo:'' };
+            document.getElementById('cal-memo').value = dayInfo.memo || "";
+            
+            let listHtml = "";
+            const colorCodes = ['#fff','#ffcdd2', '#fff9c4', '#c8e6c9', '#bbdefb', '#e1bee7'];
+            if(dayInfo.schedules && dayInfo.schedules.length > 0) { 
+                dayInfo.schedules.forEach((s, idx) => { 
+                    listHtml += `<div class="schedule-item"><div class="s-dot" style="background:${colorCodes[s.color]}"></div><span class="schedule-text">${s.text}</span><span class="del-schedule-btn" onclick="deleteSchedule(${idx})">×</span></div>`; 
+                }); 
+            } else { 
+                listHtml = "<p style='font-size:10px;color:#999;text-align:center;'>暂无行程</p>"; 
+            }
+            document.getElementById('schedule-list-container').innerHTML = listHtml;
+            
+            const labels = JSON.parse(localStorage.getItem("keto_color_labels")||'["","","","",""]');
+            let colorHtml = "";
+            for(let i=1; i<=5; i++) { 
+                const labelText = labels[i-1]; 
+                const labelHtml = labelText ? `<span class="color-label-text">${labelText}</span>` : ''; 
+                colorHtml += `<div class="color-chip" onclick="addSchedule(${i})"><div class="color-circle" style="background:${colorCodes[i]}"></div>${labelHtml}</div>`; 
+            }
+            document.getElementById('cal-color-options').innerHTML = colorHtml;
+        }
+
+        function addSchedule(colorIdx) { 
+            if(!calSelectedDateStr) return; 
+            const text = prompt("请输入行程内容 (例如: 10:00 开会)"); 
+            if(!text) return; 
+            const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"); 
+            if(!calData[calSelectedDateStr]) calData[calSelectedDateStr] = { schedules:[], memo:'' }; 
+            if(!calData[calSelectedDateStr].schedules) calData[calSelectedDateStr].schedules = []; 
+            calData[calSelectedDateStr].schedules.push({ color: colorIdx, text: text }); 
+            localStorage.setItem("keto_calendar_data_v2", JSON.stringify(calData)); 
+            loadCalDayDetail(); renderCalendar(); updateWidget(); 
+        }
+        
+        function deleteSchedule(idx) { 
+            if(!calSelectedDateStr) return; 
+            if(!confirm("删除这条行程？")) return; 
+            const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"); 
+            if(calData[calSelectedDateStr]) { 
+                calData[calSelectedDateStr].schedules.splice(idx, 1); 
+                localStorage.setItem("keto_calendar_data_v2", JSON.stringify(calData)); 
+                loadCalDayDetail(); renderCalendar(); updateWidget(); 
+            } 
+        }
+        
+        function saveCalMemo() { 
+            if(!calSelectedDateStr) return; 
+            const text = document.getElementById('cal-memo').value; 
+            const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"); 
+            if(!calData[calSelectedDateStr]) calData[calSelectedDateStr] = { schedules:[], memo:'' }; 
+            calData[calSelectedDateStr].memo = text; 
+            localStorage.setItem("keto_calendar_data_v2", JSON.stringify(calData)); 
+            renderCalendar(); 
+        }
+
+        // --- 3. Widget & Other Logic ---
         function toggleSched(e) { e.stopPropagation(); schedExpanded = !schedExpanded; updateWidget(); }
 
         function updateWidget() {
@@ -499,24 +571,37 @@
                 const now = new Date();
                 const paddedDate = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
                 const simpleDate = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`;
+                
                 const wData = JSON.parse(localStorage.getItem("keto_water_v2")||"[]").filter(i => i.date === paddedDate || i.date === simpleDate);
                 const total = wData.reduce((acc,cur)=>acc+cur.amount, 0);
                 const elec = wData.filter(i=>i.isElec).reduce((acc,cur)=>acc+cur.amount, 0);
+                
                 let GOAL_T = parseInt(localStorage.getItem('keto_goal_total') || 2000);
                 let GOAL_E = parseInt(localStorage.getItem('keto_goal_elec') || 500);
+                
                 document.getElementById('w-val-total').innerText = `${total}/${GOAL_T}`;
                 document.getElementById('w-bar-total').style.width = Math.min((total/GOAL_T)*100, 100) + "%";
                 document.getElementById('w-val-elec').innerText = `${elec}/${GOAL_E}`;
                 document.getElementById('w-bar-elec').style.width = Math.min((elec/GOAL_E)*100, 100) + "%";
+                
                 const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}");
                 const dayInfo = calData[paddedDate] || calData[simpleDate];
                 const schedList = (dayInfo && dayInfo.schedules) ? dayInfo.schedules : [];
                 const colorCodes = ['#fff','#ffcdd2', '#fff9c4', '#c8e6c9', '#bbdefb', '#e1bee7'];
+                
                 let schedHtml = "";
-                if(schedList.length === 0) { schedHtml = "<div class='sched-item' style='color:#999'>无安排</div>"; } else {
+                if(schedList.length === 0) { 
+                    schedHtml = "<div class='sched-item' style='color:#999'>无安排</div>"; 
+                } else {
                     const countToShow = schedExpanded ? schedList.length : 1;
-                    for(let i=0; i<countToShow; i++) { const s = schedList[i]; schedHtml += `<div class="sched-item"><div class="sched-dot" style="background:${colorCodes[s.color]||'#ccc'}"></div><span>${s.text}</span></div>`; }
-                    if(schedList.length > 1) { const btnText = schedExpanded ? "收起" : `展开剩余${schedList.length-1}项`; schedHtml += `<button class="expand-btn" onclick="toggleSched(event)">${btnText}</button>`; }
+                    for(let i=0; i<countToShow; i++) { 
+                        const s = schedList[i]; 
+                        schedHtml += `<div class="sched-item"><div class="sched-dot" style="background:${colorCodes[s.color]||'#ccc'}"></div><span>${s.text}</span></div>`; 
+                    }
+                    if(schedList.length > 1) { 
+                        const btnText = schedExpanded ? "收起" : `展开剩余${schedList.length-1}项`; 
+                        schedHtml += `<button class="expand-btn" onclick="toggleSched(event)">${btnText}</button>`; 
+                    }
                 }
                 document.getElementById('widget-schedule-list').innerHTML = schedHtml;
             } catch(e) { console.log('Widget update error', e); }
@@ -603,66 +688,16 @@
         function setSummaryView(view) { sumView = view; document.getElementById('sum-btn-table').className = 'sum-view-btn' + (view==='table'?' active':''); document.getElementById('sum-btn-chart').className = 'sum-view-btn' + (view==='chart'?' active':''); renderSummaryContent(); }
         function renderSummaryContent() { const container = document.getElementById('summary-content'); const history = getHistory(sumSource); const metricList = SUMMARY_METRICS[sumSource]; const currentMetricObj = metricList.find(m => m.id === sumMetric); const unit = currentMetricObj ? currentMetricObj.unit : ''; const dataList = history.filter(r => { if(sumMetric === 'bp') return r.data['bp-high'] && r.data['bp-low']; return r.data[sumMetric] !== undefined && r.data[sumMetric] !== ''; }); if(dataList.length === 0) { container.innerHTML = "<p style='text-align:center;color:#999;margin-top:20px;'>暂无数据</p>"; return; } if(sumView === 'table') { let rows = ""; dataList.forEach((r, idx) => { let valDisplay = ""; let diffDisplay = ""; if(sumMetric === 'bp') { valDisplay = `${r.data['bp-high']}/${r.data['bp-low']}`; if(idx < dataList.length - 1) { const prev = dataList[idx+1]; if(prev.data['bp-high']) { const dh = r.data['bp-high'] - prev.data['bp-high']; const dl = r.data['bp-low'] - prev.data['bp-low']; const ha = dh>0?'↑':'↓'; const la = dl>0?'↑':'↓'; const colorClass = (dh>0||dl>0) ? 'val-bad' : (dh==0&&dl==0?'val-neutral':'val-good'); diffDisplay = `<span class="val-change ${colorClass}">H${ha}${Math.abs(dh)} L${la}${Math.abs(dl)}</span>`; } } } else { let val = parseFloat(r.data[sumMetric]); valDisplay = val + unit; if(idx < dataList.length - 1) { const prev = dataList[idx+1]; if(prev.data[sumMetric]) { const prevVal = parseFloat(prev.data[sumMetric]); const diff = val - prevVal; const trend = checkMetricTrend(sumMetric, diff, val); if(trend !== 'neutral') { const arrow = diff>0?'↑':'↓'; const color = trend==='good' ? 'val-good' : 'val-bad'; diffDisplay = `<span class="val-change ${color}">${arrow}${Math.abs(diff).toFixed(1)}</span>`; } } } } rows += `<tr><td>${r.date}<br><span style="font-size:8px;color:#999">${r.time}</span></td><td style="font-weight:bold;">${valDisplay} ${diffDisplay}</td></tr>`; }); container.innerHTML = `<table class="report-table"><tr><th>日期</th><th>${currentMetricObj.name}</th></tr>${rows}</table>`; } else { if(sumMetric === 'bp') { container.innerHTML="<p style='text-align:center;margin-top:20px;'>血压暂不支持趋势图</p>"; return; } const chartData = dataList.slice(0, 15).reverse(); if(chartData.length < 2) { container.innerHTML="<p style='text-align:center;margin-top:20px;'>数据不足以生成图表</p>"; return; } const vals = chartData.map(r => parseFloat(r.data[sumMetric])); const min = Math.min(...vals) * 0.9; const max = Math.max(...vals) * 1.1; let bars = ""; chartData.forEach((r, i) => { const val = parseFloat(r.data[sumMetric]); const h = ((val - min) / (max - min)) * 80 + 10; bars += `<div class="chart-col"><span class="chart-val">${val}</span><div class="chart-bar" style="height:${h}%"></div><div class="chart-date">${r.date.slice(5)}</div></div>`; }); container.innerHTML = `<div class="chart-box">${bars}</div><p style="text-align:center;font-size:10px;color:#999;">${currentMetricObj.name}趋势 (近15次)</p>`; } }
 
-        function renderCalendar() {
-            const year = calCurrentDate.getFullYear();
-            const month = calCurrentDate.getMonth(); 
-            document.getElementById('cal-month-title').innerText = `${year}年${month+1}月`;
-            const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month+1, 0);
-            const daysInMonth = lastDay.getDate();
-            const startDayOfWeek = firstDay.getDay(); 
-            const grid = document.getElementById('calendar-days');
-            grid.innerHTML = "";
-            for(let i=0; i<startDayOfWeek; i++) { grid.innerHTML += `<div></div>`; }
-            for(let d=1; d<=daysInMonth; d++) {
-                const dateStr = `${year}-${(month+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
-                const wData = JSON.parse(localStorage.getItem("keto_water_v2")||"[]").filter(i => { return i.date === dateStr || i.date === `${year}-${month+1}-${d}`; });
-                let wMark = "";
-                if(wData.length > 0) { const total = wData.reduce((acc,cur)=>acc+cur.amount, 0); wMark = total >= GOAL_TOTAL ? "<span style='color:green'>✔</span>" : "<span style='color:red'>✘</span>"; }
-                const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}");
-                const dayInfo = calData[dateStr] || calData[`${year}-${month+1}-${d}`] || { schedules: [] };
-                let dotsHtml = "";
-                if(dayInfo.schedules) {
-                    const showCount = Math.min(dayInfo.schedules.length, 4);
-                    for(let i=0; i<showCount; i++) { const col = dayInfo.schedules[i].color; dotsHtml += `<div class="s-dot dot-color-${col}"></div>`; }
-                    if(dayInfo.schedules.length > 4) dotsHtml += `<span style="font-size:8px;line-height:6px;">+</span>`;
-                }
-                const hasMemo = dayInfo.memo ? `<div class="memo-dot" style="display:block"></div>` : "";
-                const activeClass = dateStr === calSelectedDateStr ? "active" : "";
-                const todayStr = new Date().toISOString().slice(0,10);
-                const todayClass = dateStr === todayStr ? "today" : "";
-                grid.innerHTML += `<div class="calendar-cell ${activeClass} ${todayClass}" onclick="selectCalDate('${dateStr}')"><span class="day-num">${d}</span><div class="schedule-dots">${dotsHtml}</div><div class="water-mark">${wMark}</div>${hasMemo}</div>`;
-            }
-        }
-        function changeMonth(delta) { calCurrentDate.setMonth(calCurrentDate.getMonth() + delta); renderCalendar(); }
-        function selectCalDate(dateStr) { calSelectedDateStr = dateStr; renderCalendar(); loadCalDayDetail(); }
-        function loadCalDayDetail() {
-            document.getElementById('cal-detail-date').innerText = calSelectedDateStr;
-            const dailyHist = JSON.parse(localStorage.getItem("keto_log_daily_v13")||"[]");
-            const record = dailyHist.find(r => r.date === calSelectedDateStr);
-            const html = record ? `<div class="detail-row"><span>🩸 血糖:</span><b>${record.data.glucose||'-'}</b></div><div class="detail-row"><span>🟣 血酮:</span><b>${record.data.ketone||'-'}</b></div><div class="detail-row"><span>💧 尿酸:</span><b>${record.data.ua||'-'}</b></div>` : `<p style="text-align:center;color:#ccc;font-size:10px;">今日无身体数据</p>`;
-            document.getElementById('cal-health-data').innerHTML = html;
-            const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}");
-            const dayInfo = calData[calSelectedDateStr] || { schedules:[], memo:'' };
-            document.getElementById('cal-memo').value = dayInfo.memo || "";
-            let listHtml = "";
-            const colorCodes = ['#fff','#ffcdd2', '#fff9c4', '#c8e6c9', '#bbdefb', '#e1bee7'];
-            if(dayInfo.schedules && dayInfo.schedules.length > 0) { dayInfo.schedules.forEach((s, idx) => { listHtml += `<div class="schedule-item"><div class="s-dot" style="background:${colorCodes[s.color]}"></div><span class="schedule-text">${s.text}</span><span class="del-schedule-btn" onclick="deleteSchedule(${idx})">×</span></div>`; }); } else { listHtml = "<p style='font-size:10px;color:#999;text-align:center;'>暂无行程</p>"; }
-            document.getElementById('schedule-list-container').innerHTML = listHtml;
-            const labels = JSON.parse(localStorage.getItem("keto_color_labels")||'["","","","",""]');
-            let colorHtml = "";
-            for(let i=1; i<=5; i++) { const labelText = labels[i-1]; const labelHtml = labelText ? `<span class="color-label-text">${labelText}</span>` : ''; colorHtml += `<div class="color-chip" onclick="addSchedule(${i})"><div class="color-circle" style="background:${colorCodes[i]}"></div>${labelHtml}</div>`; }
-            document.getElementById('cal-color-options').innerHTML = colorHtml;
-        }
-        function addSchedule(colorIdx) { if(!calSelectedDateStr) return; const text = prompt("请输入行程内容 (例如: 10:00 开会)"); if(!text) return; const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"); if(!calData[calSelectedDateStr]) calData[calSelectedDateStr] = { schedules:[], memo:'' }; if(!calData[calSelectedDateStr].schedules) calData[calSelectedDateStr].schedules = []; calData[calSelectedDateStr].schedules.push({ color: colorIdx, text: text }); localStorage.setItem("keto_calendar_data_v2", JSON.stringify(calData)); loadCalDayDetail(); renderCalendar(); updateWidget(); }
-        function deleteSchedule(idx) { if(!calSelectedDateStr) return; if(!confirm("删除这条行程？")) return; const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"); if(calData[calSelectedDateStr]) { calData[calSelectedDateStr].schedules.splice(idx, 1); localStorage.setItem("keto_calendar_data_v2", JSON.stringify(calData)); loadCalDayDetail(); renderCalendar(); updateWidget(); } }
-        function saveCalMemo() { if(!calSelectedDateStr) return; const text = document.getElementById('cal-memo').value; const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"); if(!calData[calSelectedDateStr]) calData[calSelectedDateStr] = { schedules:[], memo:'' }; calData[calSelectedDateStr].memo = text; localStorage.setItem("keto_calendar_data_v2", JSON.stringify(calData)); renderCalendar(); }
         function loadColorLabels() { const labels = JSON.parse(localStorage.getItem("keto_color_labels")||'["","","","",""]'); for(let i=1; i<=5; i++) document.getElementById(`label-c${i}`).value = labels[i-1] || ""; }
         function saveColorLabels() { const labels = []; for(let i=1; i<=5; i++) labels.push(document.getElementById(`label-c${i}`).value); localStorage.setItem("keto_color_labels", JSON.stringify(labels)); }
         function exportData() { const d={ w: JSON.parse(localStorage.getItem("keto_water_v2")||"[]"), d13: JSON.parse(localStorage.getItem("keto_log_daily_v13")||"[]"), k13: JSON.parse(localStorage.getItem("keto_log_weekly_v13")||"[]"), cal: JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"), clab: JSON.parse(localStorage.getItem("keto_color_labels")||"[]") }; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"json"})); a.download=`keto_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
         function importData(i) { const r=new FileReader(); r.onload=e=>{try{const d=JSON.parse(e.target.result); if(confirm("覆盖数据？")){if(d.w) localStorage.setItem("keto_water_v2",JSON.stringify(d.w)); if(d.d13) localStorage.setItem("keto_log_daily_v13",JSON.stringify(d.d13));if(d.k13) localStorage.setItem("keto_log_weekly_v13",JSON.stringify(d.k13)); if(d.cal) localStorage.setItem("keto_calendar_data_v2",JSON.stringify(d.cal)); if(d.clab) localStorage.setItem("keto_color_labels",JSON.stringify(d.clab)); location.reload();}}catch(e){alert("文件错误")}}; if(i.files[0])r.readAsText(i.files[0]); }
         function clearAllData() { if(confirm("清空?")) { localStorage.clear(); location.reload(); } }
-        window.onload = function() { updateClock(); updateWidget(); }
+        
+        window.onload = function() { 
+            updateClock(); 
+            updateWidget(); 
+        }
     </script>
 </body>
 </html>
