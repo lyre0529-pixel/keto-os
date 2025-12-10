@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>与妳酮行 OS v0.36</title>
+    <title>与妳酮行 OS v0.39</title>
     <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
     
@@ -34,7 +34,7 @@
         .sched-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); flex-shrink: 0;}
         .expand-btn { font-size: 10px; color: #2196f3; cursor: pointer; margin-top: 2px; text-decoration: underline; background: none; border: none; padding: 0; }
         
-        /* App Icons */
+        /* App Grid */
         .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; justify-items: center; padding-bottom: 20px; }
         .app-btn { width: 100%; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
         .app-btn-icon { width: 55px; height: 55px; background-color: #fff; border: 3px solid #000; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 26px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); transition: transform 0.1s; }
@@ -87,21 +87,16 @@
         /* Input Styles */
         .fix-box { display: flex !important; align-items: center !important; background: #fff; border: 4px solid #000 !important; border-radius: 8px !important; padding: 0 8px !important; height: 38px !important; box-sizing: border-box !important; width: 100%; position: relative; }
         .history-mode .fix-box { background: #eee; }
-        
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; appearance: textfield; }
-
         .fix-input { flex: 1 !important; width: 0 !important; min-width: 0 !important; border: none !important; outline: none !important; background: transparent !important; font-family: "Microsoft YaHei", sans-serif; font-size: 12px; font-weight: bold; color: #333; padding: 0 !important; margin: 0 !important; }
         .fix-input::placeholder { color: #ccc; font-weight: normal; font-size: 10px; }
         .fix-unit { font-size: 9px; color: #888; font-weight: bold; margin-left: 2px; flex-shrink: 0 !important; white-space: nowrap !important; }
-
         .multi-col { display: flex; gap: 8px; flex: 1; align-items: center; }
         .col-item { flex: 1; width: 0; min-width: 0; } 
-
         .diff-badge { width: 45px; height: 38px; display: flex; justify-content: center; align-items: center; font-size: 9px; font-weight: bold; border-radius: 4px; border: 2px solid rgba(0,0,0,0.1); background: #eee; color: #999; flex-shrink: 0; white-space: nowrap; margin-left: 5px;}
         .diff-good { background: #d4edda; color: #155724; border-color: #c3e6cb; }
         .diff-bad { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
-
         .calc-stats { background: #fff3e0; border: 2px dashed #ff9800; padding: 10px; margin-bottom: 15px; border-radius: 5px; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
         .calc-item { flex: 1; min-width: 30%; text-align: center; }
         .calc-val { font-weight: bold; font-size: 14px; color: #e65100; font-family: 'Courier New', monospace; }
@@ -139,7 +134,6 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 10px; background: #fff; }
         .calendar-day-name { text-align: center; font-size: 10px; font-weight: bold; color: #666; padding-bottom: 5px; }
         
-        /* v0.36 Calendar Cell Height Increase for 8 dots */
         .calendar-cell { height: 65px; border: 1px solid #ccc; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-size: 10px; position: relative; cursor: pointer; background: #fff; overflow: hidden; }
         .calendar-cell.today { background-color: #e3f2fd; }
         .calendar-cell.active { border: 3px solid #d63384; z-index: 2; }
@@ -148,15 +142,13 @@
         .memo-dot { width: 6px; height: 6px; border-radius: 50%; background: red; position: absolute; top: 3px; right: 3px; display: none; }
         .schedule-dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; margin-top: 2px; width: 100%; padding: 0 2px;}
         .s-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); }
-        
-        /* v0.36 Colors Update */
         .dot-color-1 { background-color: #ffcdd2; } 
         .dot-color-2 { background-color: #fff9c4; } 
         .dot-color-3 { background-color: #c8e6c9; } 
-        .dot-color-4 { background-color: #abbbe6; } /* New Blue */
+        .dot-color-4 { background-color: #abbbe6; }
         .dot-color-5 { background-color: #e1bee7; } 
-        .dot-color-6 { background-color: #f5d49a; } /* New Orange */
-        .dot-color-7 { background-color: #93e0e0; } /* New Cyan */
+        .dot-color-6 { background-color: #f5d49a; }
+        .dot-color-7 { background-color: #93e0e0; }
 
         .day-detail-card { margin: 10px; padding: 10px; border: 2px solid #000; background: #fff; box-shadow: 4px 4px 0 #ccc; display: flex; flex-direction: column; gap: 10px; }
         .detail-header { font-weight: bold; border-bottom: 1px dashed #000; padding-bottom: 5px; }
@@ -173,13 +165,21 @@
         .settings-group { border: 2px dashed #ccc; padding: 10px; margin-bottom: 15px; border-radius: 5px; background: #fafafa; }
         .color-label-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
         .color-sample { width: 15px; height: 15px; border: 1px solid #000; }
+
+        /* Period Styles */
+        .period-section { border-bottom: 1px dashed #ccc; padding-bottom: 10px; margin-bottom: 10px; }
+        .period-status-box { background: #fff0f5; padding: 8px; border-radius: 8px; border: 2px solid #ffcdd2; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; font-size: 11px; color: #d63384; font-weight: bold; }
+        .period-controls { display: flex; gap: 10px; }
+        .period-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 5px; border: 2px solid #ccc; background: #fff; cursor: pointer; font-size: 10px; border-radius: 5px; }
+        .period-btn.active { background: #ffcdd2; border-color: #d63384; color: #d63384; font-weight: bold; }
+        .period-warning { font-size: 10px; color: #999; text-align: center; padding: 10px; }
     </style>
 </head>
 <body>
 
     <div id="phone-case">
         <div class="status-bar">
-            <span>与妳酮行 OS v0.36</span>
+            <span>与妳酮行 OS v0.39</span>
             <span id="clock">12:00</span>
         </div>
 
@@ -388,6 +388,7 @@
 
             <div class="day-detail-card" id="cal-detail-card">
                 <div class="detail-header" id="cal-detail-date">请选择日期</div>
+                <div id="period-ui-container"></div>
                 <div id="cal-health-data"></div>
                 <div style="margin-top:10px; border-top:1px dashed #ccc; padding-top:5px;">
                     <div style="font-size:10px; font-weight:bold;">📝 行程安排 (点击颜色添加):</div>
@@ -409,8 +410,8 @@
                     <div class="color-label-row"><div class="color-sample dot-color-3"></div><input type="text" id="label-c3" class="fix-box" style="height:25px;" placeholder="例: 运动" onchange="saveColorLabels()"></div>
                     <div class="color-label-row"><div class="color-sample dot-color-4"></div><input type="text" id="label-c4" class="fix-box" style="height:25px;" placeholder="例: 旅行" onchange="saveColorLabels()"></div>
                     <div class="color-label-row"><div class="color-sample dot-color-5"></div><input type="text" id="label-c5" class="fix-box" style="height:25px;" placeholder="例: 重要" onchange="saveColorLabels()"></div>
-                    <div class="color-label-row"><div class="color-sample dot-color-6"></div><input type="text" id="label-c6" class="fix-box" style="height:25px;" placeholder="新颜色1" onchange="saveColorLabels()"></div>
-                    <div class="color-label-row"><div class="color-sample dot-color-7"></div><input type="text" id="label-c7" class="fix-box" style="height:25px;" placeholder="新颜色2" onchange="saveColorLabels()"></div>
+                    <div class="color-label-row"><div class="color-sample dot-color-6"></div><input type="text" id="label-c6" class="fix-box" style="height:25px;" placeholder="例: 备用" onchange="saveColorLabels()"></div>
+                    <div class="color-label-row"><div class="color-sample dot-color-7"></div><input type="text" id="label-c7" class="fix-box" style="height:25px;" placeholder="例: 备用" onchange="saveColorLabels()"></div>
                 </div>
                 <div class="settings-group">
                     <p style="font-size:12px; font-weight:bold; margin-bottom:10px;">💾 数据备份</p>
@@ -448,13 +449,17 @@
             if(id==='app-water'){ waterViewOffset=0; renderWaterApp(); }
             if(id==='app-body'){ bodyViewOffset=0; switchBodyTab('daily', document.querySelector('.body-tab-btn.active') || document.querySelector('.body-tab-btn')); }
             
-            // v0.35 修复：启动日历时自动选中今天
             if(id==='app-calendar'){ 
                 const now = new Date();
+                // Ensure calSelectedDateStr is initialized correctly
                 calSelectedDateStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
-                calCurrentDate = new Date(); // 视图重置为当月
-                renderCalendar(); 
-                loadCalDayDetail(); // 立即加载底部详情
+                calCurrentDate = new Date(); 
+                try {
+                    renderCalendar(); 
+                    loadCalDayDetail(); 
+                } catch (e) {
+                    console.error("Error rendering calendar:", e);
+                }
             } 
             
             if(id==='app-settings'){ loadColorLabels(); } 
@@ -467,6 +472,9 @@
         }
 
         // --- 2. Calendar Logic ---
+        function getPeriodLog() { return JSON.parse(localStorage.getItem("keto_period_log") || "[]"); }
+        function savePeriodLog(data) { localStorage.setItem("keto_period_log", JSON.stringify(data)); }
+
         function renderCalendar() {
             const year = calCurrentDate.getFullYear();
             const month = calCurrentDate.getMonth(); 
@@ -495,7 +503,7 @@
                 
                 let dotsHtml = "";
                 if(dayInfo.schedules) {
-                    const showCount = Math.min(dayInfo.schedules.length, 8); // v0.36 limit 8
+                    const showCount = Math.min(dayInfo.schedules.length, 8);
                     for(let i=0; i<showCount; i++) { 
                         const col = dayInfo.schedules[i].color; 
                         dotsHtml += `<div class="s-dot dot-color-${col}"></div>`; 
@@ -506,7 +514,6 @@
                 const hasMemo = dayInfo.memo ? `<div class="memo-dot" style="display:block"></div>` : "";
                 const activeClass = dateStr === calSelectedDateStr ? "active" : "";
                 
-                // Today Check
                 const now = new Date();
                 const todayStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
                 const todayClass = dateStr === todayStr ? "today" : "";
@@ -525,12 +532,15 @@
             const html = record ? `<div class="detail-row"><span>🩸 血糖:</span><b>${record.data.glucose||'-'}</b></div><div class="detail-row"><span>🟣 血酮:</span><b>${record.data.ketone||'-'}</b></div><div class="detail-row"><span>💧 尿酸:</span><b>${record.data.ua||'-'}</b></div>` : `<p style="text-align:center;color:#ccc;font-size:10px;">今日无身体数据</p>`;
             document.getElementById('cal-health-data').innerHTML = html;
             
+            // Call the robust period logic
+            renderPeriodUI();
+
             const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}");
             const dayInfo = calData[calSelectedDateStr] || { schedules:[], memo:'' };
             document.getElementById('cal-memo').value = dayInfo.memo || "";
             
             let listHtml = "";
-            const colorCodes = ['#fff','#ffcdd2', '#fff9c4', '#c8e6c9', '#abbbe6', '#e1bee7', '#f5d49a', '#93e0e0']; // v0.36
+            const colorCodes = ['#fff','#ffcdd2', '#fff9c4', '#c8e6c9', '#abbbe6', '#e1bee7', '#f5d49a', '#93e0e0'];
             if(dayInfo.schedules && dayInfo.schedules.length > 0) { 
                 dayInfo.schedules.forEach((s, idx) => { 
                     listHtml += `<div class="schedule-item"><div class="s-dot" style="background:${colorCodes[s.color]}"></div><span class="schedule-text">${s.text}</span><span class="del-schedule-btn" onclick="deleteSchedule(${idx})">×</span></div>`; 
@@ -542,12 +552,114 @@
             
             const labels = JSON.parse(localStorage.getItem("keto_color_labels")||'["","","","","","",""]');
             let colorHtml = "";
-            for(let i=1; i<=7; i++) { // v0.36 loop 7
+            for(let i=1; i<=7; i++) { 
                 const labelText = labels[i-1]; 
                 const labelHtml = labelText ? `<span class="color-label-text">${labelText}</span>` : ''; 
                 colorHtml += `<div class="color-chip" onclick="addSchedule(${i})"><div class="color-circle" style="background:${colorCodes[i]}"></div>${labelHtml}</div>`; 
             }
             document.getElementById('cal-color-options').innerHTML = colorHtml;
+        }
+
+        // v0.39 Refined Period Logic
+        function renderPeriodUI() {
+            const logs = getPeriodLog();
+            const container = document.getElementById('period-ui-container');
+            
+            if (logs.length === 0) {
+                container.innerHTML = `<details class="period-section"><summary style="font-size:12px;font-weight:bold;">🌙 生理周期记录</summary><div class="period-warning">还没有设置过生理周期哦！<br>请在下方标记今天的状态</div><div class="period-controls"><div class="period-btn" onclick="togglePeriod('start')">🌙 月经开始了</div></div></details>`;
+                return;
+            }
+
+            const currentEntry = logs.find(l => l.date === calSelectedDateStr);
+            const isStart = currentEntry && currentEntry.type === 'start';
+            const isEnd = currentEntry && currentEntry.type === 'end';
+
+            // Find Last Start Date relative to selection
+            const selDate = new Date(calSelectedDateStr);
+            selDate.setHours(0,0,0,0);
+            
+            const sortedStarts = logs.filter(l => l.type === 'start').sort((a,b) => new Date(b.date) - new Date(a.date));
+            const lastStartLog = sortedStarts.find(l => new Date(l.date) <= selDate);
+            
+            let statusHtml = "";
+
+            if (lastStartLog) {
+                const startDate = new Date(lastStartLog.date);
+                startDate.setHours(0,0,0,0);
+                
+                // Find End Date for THIS cycle (Must be >= Start Date)
+                const sortedEnds = logs.filter(l => l.type === 'end').sort((a,b) => new Date(a.date) - new Date(b.date));
+                const cycleEndLog = sortedEnds.find(l => new Date(l.date) >= startDate);
+                
+                // Calculate days since Start
+                const daysFromStart = Math.floor((selDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+                if (cycleEndLog) {
+                    const endDate = new Date(cycleEndLog.date);
+                    endDate.setHours(0,0,0,0);
+                    
+                    // Case: Clicked on End Date -> Show Duration
+                    if (selDate.getTime() === endDate.getTime()) {
+                        const duration = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                        statusHtml = `<div class="period-status-box">❤️ 本次月经结束 (共持续 ${duration} 天)</div>`;
+                    }
+                    // Case: In Period (Start <= Sel < End)
+                    else if (selDate < endDate) {
+                        statusHtml = `<div class="period-status-box">❤️ 生理周期第 ${daysFromStart} 天 (月经期)</div>`;
+                    }
+                    // Case: After Period (Sel > End) -> Calculate from End Date
+                    else {
+                        const daysFromEnd = Math.floor((selDate - endDate) / (1000 * 60 * 60 * 24));
+                        
+                        if (daysFromEnd > 28) {
+                            // Delay Logic: Only show delay if > 28 days since END
+                            statusHtml = `<div class="period-status-box" style="color:red;border-color:red;">⚠️ 月经延迟 ${daysFromEnd - 28} 天</div>`;
+                        } else {
+                            // Phase Logic: Only show phases if <= 28 days since END
+                            let phase = "";
+                            if (daysFromEnd <= 7) phase = "(卵泡期 - 状态不错)"; // Roughly 1 week post period
+                            else if (daysFromEnd <= 12) phase = "(排卵期 - 易受孕)"; 
+                            else phase = "(黄体期 - 注意情绪)";
+                            statusHtml = `<div class="period-status-box">❤️ 距离结束第 ${daysFromEnd} 天 ${phase}</div>`;
+                        }
+                    }
+                } else {
+                    // No End Date found -> Indefinite Period (User Rule 4)
+                    statusHtml = `<div class="period-status-box">❤️ 生理周期第 ${daysFromStart} 天 (月经期)</div>`;
+                }
+            } else {
+                // Selected date is BEFORE any recorded start date
+                statusHtml = ""; 
+            }
+
+            container.innerHTML = `
+                <div class="period-section">
+                    ${statusHtml}
+                    <div class="period-controls">
+                        <div class="period-btn ${isStart?'active':''}" onclick="togglePeriod('start')">
+                            ${isStart ? '✅' : ''} 🌙 月经开始了
+                        </div>
+                        <div class="period-btn ${isEnd?'active':''}" onclick="togglePeriod('end')">
+                            ${isEnd ? '✅' : ''} 🌙 月经结束了
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function togglePeriod(type) {
+            const logs = getPeriodLog();
+            const existingIdx = logs.findIndex(l => l.date === calSelectedDateStr);
+            if (existingIdx !== -1) {
+                const entry = logs[existingIdx];
+                if (entry.type === type) {
+                    if(confirm("确认删除这条记录吗？")) { logs.splice(existingIdx, 1); savePeriodLog(logs); renderPeriodUI(); }
+                } else {
+                    if(confirm(`确认将今天改为月经【${type==='start'?'开始':'结束'}】日吗？`)) { entry.type = type; savePeriodLog(logs); renderPeriodUI(); }
+                }
+            } else {
+                if(confirm(`确认标记 [${calSelectedDateStr}] 为月经【${type==='start'?'开始':'结束'}】日吗？`)) { logs.push({ date: calSelectedDateStr, type: type }); savePeriodLog(logs); renderPeriodUI(); }
+            }
         }
 
         function addSchedule(colorIdx) { 
@@ -710,13 +822,16 @@
 
         function loadColorLabels() { const labels = JSON.parse(localStorage.getItem("keto_color_labels")||'["","","","","","",""]'); for(let i=1; i<=7; i++) document.getElementById(`label-c${i}`).value = labels[i-1] || ""; }
         function saveColorLabels() { const labels = []; for(let i=1; i<=7; i++) labels.push(document.getElementById(`label-c${i}`).value); localStorage.setItem("keto_color_labels", JSON.stringify(labels)); }
-        function exportData() { const d={ w: JSON.parse(localStorage.getItem("keto_water_v2")||"[]"), d13: JSON.parse(localStorage.getItem("keto_log_daily_v13")||"[]"), k13: JSON.parse(localStorage.getItem("keto_log_weekly_v13")||"[]"), cal: JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"), clab: JSON.parse(localStorage.getItem("keto_color_labels")||"[]") }; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"json"})); a.download=`keto_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
-        function importData(i) { const r=new FileReader(); r.onload=e=>{try{const d=JSON.parse(e.target.result); if(confirm("覆盖数据？")){if(d.w) localStorage.setItem("keto_water_v2",JSON.stringify(d.w)); if(d.d13) localStorage.setItem("keto_log_daily_v13",JSON.stringify(d.d13));if(d.k13) localStorage.setItem("keto_log_weekly_v13",JSON.stringify(d.k13)); if(d.cal) localStorage.setItem("keto_calendar_data_v2",JSON.stringify(d.cal)); if(d.clab) localStorage.setItem("keto_color_labels",JSON.stringify(d.clab)); location.reload();}}catch(e){alert("文件错误")}}; if(i.files[0])r.readAsText(i.files[0]); }
+        function exportData() { const d={ w: JSON.parse(localStorage.getItem("keto_water_v2")||"[]"), d13: JSON.parse(localStorage.getItem("keto_log_daily_v13")||"[]"), k13: JSON.parse(localStorage.getItem("keto_log_weekly_v13")||"[]"), cal: JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"), clab: JSON.parse(localStorage.getItem("keto_color_labels")||"[]"), period: JSON.parse(localStorage.getItem("keto_period_log")||"[]") }; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"json"})); a.download=`keto_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
+        function importData(i) { const r=new FileReader(); r.onload=e=>{try{const d=JSON.parse(e.target.result); if(confirm("覆盖数据？")){if(d.w) localStorage.setItem("keto_water_v2",JSON.stringify(d.w)); if(d.d13) localStorage.setItem("keto_log_daily_v13",JSON.stringify(d.d13));if(d.k13) localStorage.setItem("keto_log_weekly_v13",JSON.stringify(d.k13)); if(d.cal) localStorage.setItem("keto_calendar_data_v2",JSON.stringify(d.cal)); if(d.clab) localStorage.setItem("keto_color_labels",JSON.stringify(d.clab)); if(d.period) localStorage.setItem("keto_period_log",JSON.stringify(d.period)); location.reload();}}catch(e){alert("文件错误")}}; if(i.files[0])r.readAsText(i.files[0]); }
         function clearAllData() { if(confirm("清空?")) { localStorage.clear(); location.reload(); } }
         
+        // v0.39 Critical Fix: Ensuring calendar load
         window.onload = function() { 
             updateClock(); 
             updateWidget(); 
+            // Pre-calculate calendar for immediate access
+            calSelectedDateStr = new Date().toISOString().slice(0,10);
         }
     </script>
 </body>
