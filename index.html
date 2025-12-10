@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>与妳酮行 OS v0.34</title>
+    <title>与妳酮行 OS v0.36</title>
     <link href="https://unpkg.com/nes.css@2.3.0/css/nes.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
     
@@ -88,7 +88,6 @@
         .fix-box { display: flex !important; align-items: center !important; background: #fff; border: 4px solid #000 !important; border-radius: 8px !important; padding: 0 8px !important; height: 38px !important; box-sizing: border-box !important; width: 100%; position: relative; }
         .history-mode .fix-box { background: #eee; }
         
-        /* 🚫 Hide Spin Buttons */
         input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 
@@ -139,7 +138,9 @@
         .calendar-title { font-weight: bold; font-size: 14px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; padding: 10px; background: #fff; }
         .calendar-day-name { text-align: center; font-size: 10px; font-weight: bold; color: #666; padding-bottom: 5px; }
-        .calendar-cell { height: 55px; border: 1px solid #ccc; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-size: 10px; position: relative; cursor: pointer; background: #fff; overflow: hidden; }
+        
+        /* v0.36 Calendar Cell Height Increase for 8 dots */
+        .calendar-cell { height: 65px; border: 1px solid #ccc; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-size: 10px; position: relative; cursor: pointer; background: #fff; overflow: hidden; }
         .calendar-cell.today { background-color: #e3f2fd; }
         .calendar-cell.active { border: 3px solid #d63384; z-index: 2; }
         .day-num { margin-top: 2px; font-weight: bold; }
@@ -147,7 +148,16 @@
         .memo-dot { width: 6px; height: 6px; border-radius: 50%; background: red; position: absolute; top: 3px; right: 3px; display: none; }
         .schedule-dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; margin-top: 2px; width: 100%; padding: 0 2px;}
         .s-dot { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); }
-        .dot-color-1 { background-color: #ffcdd2; } .dot-color-2 { background-color: #fff9c4; } .dot-color-3 { background-color: #c8e6c9; } .dot-color-4 { background-color: #bbdefb; } .dot-color-5 { background-color: #e1bee7; } 
+        
+        /* v0.36 Colors Update */
+        .dot-color-1 { background-color: #ffcdd2; } 
+        .dot-color-2 { background-color: #fff9c4; } 
+        .dot-color-3 { background-color: #c8e6c9; } 
+        .dot-color-4 { background-color: #abbbe6; } /* New Blue */
+        .dot-color-5 { background-color: #e1bee7; } 
+        .dot-color-6 { background-color: #f5d49a; } /* New Orange */
+        .dot-color-7 { background-color: #93e0e0; } /* New Cyan */
+
         .day-detail-card { margin: 10px; padding: 10px; border: 2px solid #000; background: #fff; box-shadow: 4px 4px 0 #ccc; display: flex; flex-direction: column; gap: 10px; }
         .detail-header { font-weight: bold; border-bottom: 1px dashed #000; padding-bottom: 5px; }
         .detail-row { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; }
@@ -169,7 +179,7 @@
 
     <div id="phone-case">
         <div class="status-bar">
-            <span>与妳酮行 OS v0.34</span>
+            <span>与妳酮行 OS v0.36</span>
             <span id="clock">12:00</span>
         </div>
 
@@ -399,6 +409,8 @@
                     <div class="color-label-row"><div class="color-sample dot-color-3"></div><input type="text" id="label-c3" class="fix-box" style="height:25px;" placeholder="例: 运动" onchange="saveColorLabels()"></div>
                     <div class="color-label-row"><div class="color-sample dot-color-4"></div><input type="text" id="label-c4" class="fix-box" style="height:25px;" placeholder="例: 旅行" onchange="saveColorLabels()"></div>
                     <div class="color-label-row"><div class="color-sample dot-color-5"></div><input type="text" id="label-c5" class="fix-box" style="height:25px;" placeholder="例: 重要" onchange="saveColorLabels()"></div>
+                    <div class="color-label-row"><div class="color-sample dot-color-6"></div><input type="text" id="label-c6" class="fix-box" style="height:25px;" placeholder="新颜色1" onchange="saveColorLabels()"></div>
+                    <div class="color-label-row"><div class="color-sample dot-color-7"></div><input type="text" id="label-c7" class="fix-box" style="height:25px;" placeholder="新颜色2" onchange="saveColorLabels()"></div>
                 </div>
                 <div class="settings-group">
                     <p style="font-size:12px; font-weight:bold; margin-bottom:10px;">💾 数据备份</p>
@@ -435,8 +447,16 @@
             
             if(id==='app-water'){ waterViewOffset=0; renderWaterApp(); }
             if(id==='app-body'){ bodyViewOffset=0; switchBodyTab('daily', document.querySelector('.body-tab-btn.active') || document.querySelector('.body-tab-btn')); }
-            // 修复：确保日历渲染被调用
-            if(id==='app-calendar'){ renderCalendar(); } 
+            
+            // v0.35 修复：启动日历时自动选中今天
+            if(id==='app-calendar'){ 
+                const now = new Date();
+                calSelectedDateStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
+                calCurrentDate = new Date(); // 视图重置为当月
+                renderCalendar(); 
+                loadCalDayDetail(); // 立即加载底部详情
+            } 
+            
             if(id==='app-settings'){ loadColorLabels(); } 
         }
         
@@ -446,7 +466,7 @@
             updateWidget();
         }
 
-        // --- 2. Calendar Logic (Moved Up for Safety) ---
+        // --- 2. Calendar Logic ---
         function renderCalendar() {
             const year = calCurrentDate.getFullYear();
             const month = calCurrentDate.getMonth(); 
@@ -475,12 +495,12 @@
                 
                 let dotsHtml = "";
                 if(dayInfo.schedules) {
-                    const showCount = Math.min(dayInfo.schedules.length, 4);
+                    const showCount = Math.min(dayInfo.schedules.length, 8); // v0.36 limit 8
                     for(let i=0; i<showCount; i++) { 
                         const col = dayInfo.schedules[i].color; 
                         dotsHtml += `<div class="s-dot dot-color-${col}"></div>`; 
                     }
-                    if(dayInfo.schedules.length > 4) dotsHtml += `<span style="font-size:8px;line-height:6px;">+</span>`;
+                    if(dayInfo.schedules.length > 8) dotsHtml += `<span style="font-size:8px;line-height:6px;">+</span>`;
                 }
                 
                 const hasMemo = dayInfo.memo ? `<div class="memo-dot" style="display:block"></div>` : "";
@@ -510,7 +530,7 @@
             document.getElementById('cal-memo').value = dayInfo.memo || "";
             
             let listHtml = "";
-            const colorCodes = ['#fff','#ffcdd2', '#fff9c4', '#c8e6c9', '#bbdefb', '#e1bee7'];
+            const colorCodes = ['#fff','#ffcdd2', '#fff9c4', '#c8e6c9', '#abbbe6', '#e1bee7', '#f5d49a', '#93e0e0']; // v0.36
             if(dayInfo.schedules && dayInfo.schedules.length > 0) { 
                 dayInfo.schedules.forEach((s, idx) => { 
                     listHtml += `<div class="schedule-item"><div class="s-dot" style="background:${colorCodes[s.color]}"></div><span class="schedule-text">${s.text}</span><span class="del-schedule-btn" onclick="deleteSchedule(${idx})">×</span></div>`; 
@@ -520,9 +540,9 @@
             }
             document.getElementById('schedule-list-container').innerHTML = listHtml;
             
-            const labels = JSON.parse(localStorage.getItem("keto_color_labels")||'["","","","",""]');
+            const labels = JSON.parse(localStorage.getItem("keto_color_labels")||'["","","","","","",""]');
             let colorHtml = "";
-            for(let i=1; i<=5; i++) { 
+            for(let i=1; i<=7; i++) { // v0.36 loop 7
                 const labelText = labels[i-1]; 
                 const labelHtml = labelText ? `<span class="color-label-text">${labelText}</span>` : ''; 
                 colorHtml += `<div class="color-chip" onclick="addSchedule(${i})"><div class="color-circle" style="background:${colorCodes[i]}"></div>${labelHtml}</div>`; 
@@ -587,7 +607,7 @@
                 const calData = JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}");
                 const dayInfo = calData[paddedDate] || calData[simpleDate];
                 const schedList = (dayInfo && dayInfo.schedules) ? dayInfo.schedules : [];
-                const colorCodes = ['#fff','#ffcdd2', '#fff9c4', '#c8e6c9', '#bbdefb', '#e1bee7'];
+                const colorCodes = ['#fff','#ffcdd2', '#fff9c4', '#c8e6c9', '#abbbe6', '#e1bee7', '#f5d49a', '#93e0e0'];
                 
                 let schedHtml = "";
                 if(schedList.length === 0) { 
@@ -688,8 +708,8 @@
         function setSummaryView(view) { sumView = view; document.getElementById('sum-btn-table').className = 'sum-view-btn' + (view==='table'?' active':''); document.getElementById('sum-btn-chart').className = 'sum-view-btn' + (view==='chart'?' active':''); renderSummaryContent(); }
         function renderSummaryContent() { const container = document.getElementById('summary-content'); const history = getHistory(sumSource); const metricList = SUMMARY_METRICS[sumSource]; const currentMetricObj = metricList.find(m => m.id === sumMetric); const unit = currentMetricObj ? currentMetricObj.unit : ''; const dataList = history.filter(r => { if(sumMetric === 'bp') return r.data['bp-high'] && r.data['bp-low']; return r.data[sumMetric] !== undefined && r.data[sumMetric] !== ''; }); if(dataList.length === 0) { container.innerHTML = "<p style='text-align:center;color:#999;margin-top:20px;'>暂无数据</p>"; return; } if(sumView === 'table') { let rows = ""; dataList.forEach((r, idx) => { let valDisplay = ""; let diffDisplay = ""; if(sumMetric === 'bp') { valDisplay = `${r.data['bp-high']}/${r.data['bp-low']}`; if(idx < dataList.length - 1) { const prev = dataList[idx+1]; if(prev.data['bp-high']) { const dh = r.data['bp-high'] - prev.data['bp-high']; const dl = r.data['bp-low'] - prev.data['bp-low']; const ha = dh>0?'↑':'↓'; const la = dl>0?'↑':'↓'; const colorClass = (dh>0||dl>0) ? 'val-bad' : (dh==0&&dl==0?'val-neutral':'val-good'); diffDisplay = `<span class="val-change ${colorClass}">H${ha}${Math.abs(dh)} L${la}${Math.abs(dl)}</span>`; } } } else { let val = parseFloat(r.data[sumMetric]); valDisplay = val + unit; if(idx < dataList.length - 1) { const prev = dataList[idx+1]; if(prev.data[sumMetric]) { const prevVal = parseFloat(prev.data[sumMetric]); const diff = val - prevVal; const trend = checkMetricTrend(sumMetric, diff, val); if(trend !== 'neutral') { const arrow = diff>0?'↑':'↓'; const color = trend==='good' ? 'val-good' : 'val-bad'; diffDisplay = `<span class="val-change ${color}">${arrow}${Math.abs(diff).toFixed(1)}</span>`; } } } } rows += `<tr><td>${r.date}<br><span style="font-size:8px;color:#999">${r.time}</span></td><td style="font-weight:bold;">${valDisplay} ${diffDisplay}</td></tr>`; }); container.innerHTML = `<table class="report-table"><tr><th>日期</th><th>${currentMetricObj.name}</th></tr>${rows}</table>`; } else { if(sumMetric === 'bp') { container.innerHTML="<p style='text-align:center;margin-top:20px;'>血压暂不支持趋势图</p>"; return; } const chartData = dataList.slice(0, 15).reverse(); if(chartData.length < 2) { container.innerHTML="<p style='text-align:center;margin-top:20px;'>数据不足以生成图表</p>"; return; } const vals = chartData.map(r => parseFloat(r.data[sumMetric])); const min = Math.min(...vals) * 0.9; const max = Math.max(...vals) * 1.1; let bars = ""; chartData.forEach((r, i) => { const val = parseFloat(r.data[sumMetric]); const h = ((val - min) / (max - min)) * 80 + 10; bars += `<div class="chart-col"><span class="chart-val">${val}</span><div class="chart-bar" style="height:${h}%"></div><div class="chart-date">${r.date.slice(5)}</div></div>`; }); container.innerHTML = `<div class="chart-box">${bars}</div><p style="text-align:center;font-size:10px;color:#999;">${currentMetricObj.name}趋势 (近15次)</p>`; } }
 
-        function loadColorLabels() { const labels = JSON.parse(localStorage.getItem("keto_color_labels")||'["","","","",""]'); for(let i=1; i<=5; i++) document.getElementById(`label-c${i}`).value = labels[i-1] || ""; }
-        function saveColorLabels() { const labels = []; for(let i=1; i<=5; i++) labels.push(document.getElementById(`label-c${i}`).value); localStorage.setItem("keto_color_labels", JSON.stringify(labels)); }
+        function loadColorLabels() { const labels = JSON.parse(localStorage.getItem("keto_color_labels")||'["","","","","","",""]'); for(let i=1; i<=7; i++) document.getElementById(`label-c${i}`).value = labels[i-1] || ""; }
+        function saveColorLabels() { const labels = []; for(let i=1; i<=7; i++) labels.push(document.getElementById(`label-c${i}`).value); localStorage.setItem("keto_color_labels", JSON.stringify(labels)); }
         function exportData() { const d={ w: JSON.parse(localStorage.getItem("keto_water_v2")||"[]"), d13: JSON.parse(localStorage.getItem("keto_log_daily_v13")||"[]"), k13: JSON.parse(localStorage.getItem("keto_log_weekly_v13")||"[]"), cal: JSON.parse(localStorage.getItem("keto_calendar_data_v2")||"{}"), clab: JSON.parse(localStorage.getItem("keto_color_labels")||"[]") }; const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"json"})); a.download=`keto_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
         function importData(i) { const r=new FileReader(); r.onload=e=>{try{const d=JSON.parse(e.target.result); if(confirm("覆盖数据？")){if(d.w) localStorage.setItem("keto_water_v2",JSON.stringify(d.w)); if(d.d13) localStorage.setItem("keto_log_daily_v13",JSON.stringify(d.d13));if(d.k13) localStorage.setItem("keto_log_weekly_v13",JSON.stringify(d.k13)); if(d.cal) localStorage.setItem("keto_calendar_data_v2",JSON.stringify(d.cal)); if(d.clab) localStorage.setItem("keto_color_labels",JSON.stringify(d.clab)); location.reload();}}catch(e){alert("文件错误")}}; if(i.files[0])r.readAsText(i.files[0]); }
         function clearAllData() { if(confirm("清空?")) { localStorage.clear(); location.reload(); } }
